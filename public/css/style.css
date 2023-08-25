@@ -1,0 +1,18 @@
+.btn_adc{
+    background-color: #6c757d;
+    border: 1px solid #6c757d;
+    border-radius: 7px;
+    width: 100px;
+    color: rgb(255, 255, 255);
+}
+
+.btnRemDest{
+    background-color: "#dc3545";
+    border-color: "#dc3545";
+    z-index: "auto";
+    width: "25px";
+}
+
+.esconde{
+    display: none!important;
+}

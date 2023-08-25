@@ -1,0 +1,711 @@
+
+--------------------------------------------------------------------------
+ALTERAÇÃO    DATA  21 de out de 2021 às 08:24 até às 21 de out de 2021 às 10:00 ||
+--------------------------------------------------------------------------  
+PASTA      |-> public\css
+               
+ARQUIVO     |-> style.css  
+
+Titulo[
+   HC - Botão Aparecendo no modal de Em Andamento para Finalizado
+]
+
+DESCRIÇÂO [
+    Alterações no css 
+
+]
+
+--------------------------------------------------------------------------
+ALTERAÇÃO    DATA  21 de out de 2021 às 10:01 ||
+--------------------------------------------------------------------------  
+PASTA      |-> public\js\apis
+               
+ARQUIVO     |-> excluir_motorista.js
+            |-> excluir_Solicitante.js
+            |-> excluir_Veiculo.js
+
+Titulo[
+   HC - Validação em motivos de Habilitar ou desabilitar
+]
+
+DESCRIÇÂO [
+    Alterações no css 
+
+]
+SITE do trelo https://trello.com/c/satxHgVC/30-hc-bot%C3%A3o-aparecendo-no-modal
+--------------------------------------------------------------------------
+ALTERAÇÃO    DATA 21 de out de 2021 às 08:24                              ||
+--------------------------------------------------------------------------  
+PASTA      |-> api
+               
+ARQUIVO     |-> css/style.css  
+
+Titulo[
+    HC - Validação em motivos de Habilitar ou desabilitar
+]
+
+DESCRIÇÂO [
+    Alteração no botão pelo CSS.
+    Remoção do CustomControl dos checkbox.
+
+]17:30 11/02/202217:30 11/02/2022
+
+--------------------------------------------------------------------------
+SITE do trelo https://trello.com/c/PXj5QbAB/32-hc-valida%C3%A7%C3%A3o-em-motivos-de-habilitar-ou-desabilitar
+--------------------------------------------------------------------------
+ALTERAÇÃO    DATA 21 de out de 2021 às 10:01                               ||
+--------------------------------------------------------------------------  
+PASTA      |-> api
+               
+ARQUIVO     |-> js/excluir_motorista.js  
+
+
+
+Titulo[
+    HC - Validação em motivos de Habilitar ou desabilitar
+]
+
+DESCRIÇÂO [
+
+    FUNÇÃO ADICIONADA    |-> excludeMotorista()
+
+]
+
+SITE do trelo https://trello.com/c/lGuTPPNI/45-hc-renderiza%C3%A7%C3%A3o-condicional
+--------------------------------------------------------------------------
+ALTERAÇÃO    DATA 27 de out de 2021 às 17:32                           ||
+--------------------------------------------------------------------------  
+PASTA      |-> app\Http\Controllers\Api
+               
+ARQUIVO     |-> js/Users_Sistema.blade.php  
+
+
+Titulo[
+    HC - Renderização condicional 
+]
+
+DESCRIÇÂO [
+
+    @if ($status ?? '3' == 0)
+<div class="alert">
+<span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+{{ $msg ?? '' }}
+</div>
+@else
+<div class="alert1">
+<span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+{{ $msg ?? '' }}
+</div>
+@endif
+
+return redirect()->route('hc_add_new_admin', $msg,[
+'status'=> $msg['status'],
+'msg'=> $msg['Usuario cadastrado com sucesso!']
+]);
+]
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+ALTERAÇÃO    DATA 5 de nov de 2021 às 09:57  até 8 de nov de 2021 às 16:46||
+--------------------------------------------------------------------------  
+PASTA      |-> resources\views\Dashboard_Principal\Formularios\
+           |-> public\css
+               
+ARQUIVO     |-> Formulario.blade.php 
+	    |-> css/Dashboard.css
+
+
+Titulo[
+    HC - Formulario Layout
+]
+
+DESCRIÇÂO [
+Arrumar a posição dos inputs do formulário principal.
+
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+ALTERAÇÃO    DATA 5 de nov de 2021 às 09:57 até 8 de nov de 2021 às 16:46  ||
+--------------------------------------------------------------------------  
+PASTA      |-> public\js\apis\pesquisa_solicitacoes\
+           |-> 
+               
+ARQUIVO     |-> new_Pesq.js
+
+
+Titulo[
+     HC - Vizualização e Edição
+]
+
+DESCRIÇÂO [
+-Formulário de Edição
+-Formulário de Visualização
+-<inputs> <select> minimizados.
+-Scroll da página colocado dentro da página.
+-image.png Formulário de Visualização Imagem.
+-<div> diminuída para 50% da página.
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+ALTERAÇÃO    DATA 29 de nov de 2021 às 13:49  ||
+--------------------------------------------------------------------------  
+PASTA      |-> resources\views\Dashboard_Principal\Formularios\
+           |-> public\js\apis\newSolicitation   
+	   |-> public\js\apis\newSolicitation\       
+ARQUIVO     |-> Formulario.blade.php 
+            |-> actions_formulario.js
+            |-> preview.js
+
+Titulo[
+     HC - Formulário preview
+]
+
+DESCRIÇÂO [
+Adicionar um preview para o usuário verificar as ações.
+
+--------------------------------------------------------------------------
+ALTERAÇÃO    DATA 30 de nov de 2021 às 09:35 até  1 de dez de 2021 às 16:44             ||
+--------------------------------------------------------------------------  
+PASTA      |-> resources\views\Dashboard_Principal\Formularios\
+           |-> public\js\apis\newSolicitation   
+	   |-> public\js\apis\newSolicitation\       
+	   |-> app\Http\Controllers\Api\
+ARQUIVO     |-> Formulario.blade.php 
+            |-> actions_formulario.js
+            |-> NewSolicitations.php
+BD 
+             |-> observacao
+            
+
+Titulo[
+     HC - Adicionar Campo de Observação
+]
+
+DESCRIÇÂO [
+Observação: O campo de observação foi adicionado apenas no formulário principal.
+<div class="col-md-12">
+<label for="exampleFormControlTextarea1" style="margin: 10px 0px 0px 0px">Observação</label>
+<textarea class="form-control" id="obsevacao" name="obs" rows="3"></textarea>
+</div>
+$observacao = $request->observacao;
+DB::insert('INSERT INTO solicitacao
+(data, hora, destino, portaria, end_loc_ident, contato_plantao, atendida_por, n_ficha, fk_paciente, status_sol, observacao)
+values (:data, :hora, :destino, :portaria, :end_loc_ident, :contato, :atendida, :n_ficha, last_insert_id(), 1, :observacao)',
+[
+":data" => $data_sol,
+":hora" => $hora_sol,
+":destino" => $dest_sol,
+":portaria" => $port_sol,
+":end_loc_ident" => $end_loc_ident,
+":n_ficha" => $n_ficha_sol,
+"contato" => $contato,
+"atendida" => $nome_func,
+":observacao" => $observacao
+]);
+ALTER TABLE solicitacao ADD observacao VARCHAR(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL AFTER atendida_por;
+--------------------------------------------------------------------------
+ALTERAÇÃO    DATA    2 de dez de 2021 às 09:29                               ||
+--------------------------------------------------------------------------  
+PASTA      |-> public\js\apis\solicitante_api
+         
+	        
+ARQUIVO     |-> adic_Solicitante.js
+            
+           
+
+Titulo[
+     HC - ComboBox formulário
+]
+
+DESCRIÇÂO [
+
+Limpar modal ao adicionar um novo solicitante dentro do formulário.
+Limpar o checkbox ao adicionar um novo solicitante
+Actualizar o checkbox sem dar reload na página.
+
+clear();
+function clear() {
+document.getElementById('adc_cod').value = "";
+document.getElementById('adc_ramal').value = "";
+document.getElementById('adc_nome').value = "";
+document.getElementById('adc_email').value = "";
+$("#solicitantes").empty();
+chargeComboSolicitante();
+}
+--------------------------------------------------------------------------
+ALTERAÇÃO    DATA 3 de dez de 2021 às 09:21   até  3 de dez de 2021 às 15:37||
+--------------------------------------------------------------------------  
+PASTA      |-> resources\views\Dashboard_Principal\Formularios\
+           |-> public\js\apis\newSolicitation   
+	   |-> public\js\apis\newSolicitation\    
+           |-> app\Http\Controllers\Api\
+ARQUIVO     |-> Formulario.blade.php 
+            |-> actions_formulario.js
+            |-> preview.js
+            |-> NewSolicitations.php   
+BD 
+            |-> Adicionado novo campo km na tabela dir_ida
+
+Titulo[
+     HC - Adicionar Kilometragem Atual do veiculo no ato do cadastro da solicitacão.
+]
+
+DESCRIÇÂO [
+Adicionar coluna de quilometragem na tabela dir_ida
+Adicionar a entidade "km" na API .php
+
+$sol_km = $request->sol_km;
+
+API DO JQUERY
+
+document.getElementById('sol_km').value = '';
+sol_km: document.getElementById('sol_km').value
+
+|| km == null)
+Campo criado thumbsup
+
+<div class="col-md-2">
+<label for="sol_km" style="margin: 10px 0px 0px 0px">KM Inicial</label>
+<input name="km" id="sol_km" type="number" class="form-control form-control-sm" required>
+</div>
+
+Campo aceita apenas números 
+
+$('#sol_km').on('keyup', function () {
+this.value = this.value.replace('/[^0-9.]/g', '');
+})
+
+Inserindo no banco de dados
+DB::insert("INSERT INTO dir_ida
+(horario, km)
+VALUES
+(?, ?)",
+[
+$sol_saida,
+$sol_km
+ ]);
+ preview.js
+
+$("#sol_km").on('change paste keyup input', function () {
+var data = $(this).val();
+$("#sol_km_m").val(data);
+})
+ Formulário Modal
+<div class="col-md-2">
+<label for="sol_km_m" style="margin: 10px 0px 0px 0px">KM Inicial</label>
+<input name="km" id="sol_km_m" type="text" class="form-control form-control-sm" disabled>
+</div>~
+
+API EDIÇÃO
+
+'horario_saida' => utf8_encode($value2['horario_saida']),
+'sol_km' => utf8_encode($value2['sol_km'])
+
+LEFT JOIN
+dir_ida di ON s.id = di.fk_solicitacao
+
+IFNULL(di.horario, 0) AS horario_saida,
+IFNULL(di.km, 0) AS sol_km
+
+--------------------------------------------------------------------------
+ALTERAÇÃO    DATA 6 de dez de 2021 às 10:01 ||
+--------------------------------------------------------------------------  
+PASTA      |-> resources\views\Dashboard_Principal\Formularios\
+           |-> public\js\apis\newSolicitation   
+	   |-> public\js\apis\newSolicitation\       
+ARQUIVO     |-> Formulario.blade.php 
+            |-> actions_formulario.js
+            |-> preview.js
+
+Titulo[
+     HC - Verificação - CheckBox HC && Incor
+]
+
+DESCRIÇÂO 
+
+Colocar Checkbox como campo requerido.
+ let hc_val = $('#hc_form:checked').length;
+    let incor_val = $('#incor_form:checked').length;
+    if (hc_val == 0 && incor_val == 0) {
+        modalClose10();
+        var p = $(`<div class="alert1">
+            <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                Erro ao Enviar: pelo menos um dos institutos deve ser selecionado.
+            </div>`);
+        p.hide()
+        $('#form_geral').append(p);
+        p.fadeIn('slow', function () {
+            window.setTimeout(function () {
+                p.fadeOut();
+            }, 2000)
+        });
+        return false
+    }
+--------------------------------------------------------------------------
+ALTERAÇÃO    6 de dez de 2021 às 10:33||
+--------------------------------------------------------------------------  
+PASTA      |-> resources\views\Dashboard_Principal\Formularios\
+           |-> public\js\apis\newSolicitation   
+	   |-> public\js\apis\newSolicitation\       
+ARQUIVO     |-> Formulario.blade.php 
+            |-> actions_formulario.js
+            |-> preview.js
+
+Titulo[
+     HC - Verificação - CheckBox HC OU  Incor
+]
+
+DESCRIÇÂO 
+
+CHECK BOX NÃO ACEITA DUAS OPÇÕES 
+
+$('#hc_form').on('click', function () {
+    var hc = $('#hc_form:checked').length;
+    if (hc === 1) {
+        $('#incor_form').attr("disabled", true);
+        $('#hc_m').attr("checked", true);
+    } else {
+        $('#incor_form').attr("disabled", false);
+        $('#hc_m').attr("checked", false);
+    }
+});
+$('#incor_form').on('click', function () {
+    var incor = $('#incor_form:checked').length;
+    if (incor === 1) {
+        $('#hc_form').attr("disabled", true);
+        $('#incor_m').attr("checked", true);
+    } else {
+        $('#hc_form').attr("disabled", false);
+        $('#incor_m').attr("checked", false);
+    }
+});
+--------------------------------------------------------------------------
+ALTERAÇÃO   6 de dez de 2021 às 15:59
+--------------------------------------------------------------------------  
+PASTA      |-> resources\views\Dashboard_Principal\Formularios\
+           |-> public\js\apis\newSolicitation   
+	   |-> public\js\apis\newSolicitation\       
+ARQUIVO     |-> Formulario.blade.php 
+            |-> actions_formulario.js
+            |-> preview.js
+
+Titulo[
+    HC - KM Inicial
+]
+
+DESCRIÇÂO 
+f ($("input[name='km_ch']").val() < $("input[name='km_vt']").val()) {
+var p = $(<div class="alert1"> <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span> Falha ao editar.O quilomêtro de chegada não pode ser menor que a volta. </div>);
+p.hide()
+$('#error').append(p);
+p.fadeIn(500, function () {
+window.setTimeout(function () {
+p.fadeOut();
+}, 2000)
+});
+
+return false;
+}
+if ($("input[name='sol_km']").val() < $("input[name='km_ch']").val()) {
+var p = $(<div class="alert1"> <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span> Falha ao editar.O quilômetro inicial não pode ser menor do que a chegada. </div>);
+p.hide()
+$('#conteudo_lista_visualiza').append(p);
+p.fadeIn(500, function () {
+window.setTimeout(function () {
+p.fadeOut();
+}, 2000)
+});
+
+return false;
+}
+
+--------------------------------------------------------------------------
+ALTERAÇÃO    DATA    7 de dez de 2021 às 08:44                               ||
+--------------------------------------------------------------------------  
+PASTA      |-> public\js\apis\pesquisa_solicitacoes
+         
+	        
+ARQUIVO     |-> new_Pesq.js
+
+BD          |-> solicitacao -> cancelamento
+            
+           
+
+Titulo[
+    HC - Adicionar Checkbox (Cancelar) - EDITAR E VISUALIZAR
+]
+
+DESCRIÇÂO [
+function changeStatus(ret, canc, ida) {
+  var stats = ``
+  if (ret == "NOK" && ida == "NOK" && canc == "OK") {
+      stats += `<th class='d-flex-align-center text-center align-middle'><span class='badge badge-pill badge-danger text-center align-middle'><i class='fa fa-times-circle mr-1'></i>Solicitação Cancelada</span></th>`
+  } else if (ret == "OK" && ida == "OK" && canc == "NOK") {
+      stats += `<th class='d-flex-align-center text-center align-middle'><span class='badge badge-pill badge-success'><i class='fa fa-check-circle mr-1 '></i> Solicitação Concluida</span></th>`
+  } else if (ret == "NOK" && ida == "OK" && canc == "NOK") {
+      stats += `<th class='d-flex-align-center text-center align-middle'><span class='badge badge-pill badge-primary text-center align-middle'><i class='fa fa-truck mr-1'></i> Solicitação em Andamento</span></th>`
+  } else {
+      stats += `<th class='d-flex-align-center text-center align-middle'><span class='badge badge-pill badge-primary text-center align-middle'><i class='fa fa-truck mr-1'></i> Solicitação em Andamento</span></th>`
+  }
+  return stats;
+}
+
+Adicionado o campo cancelar no FORMULÁRIO no js API ( New Pesquisa) na API (EDIT E VISUALIZAR ) e Banco de dados foi criado um novo campo na tabela de solicitações.
+Checkbox (Cancelar) Habilitado
+IDA E RETORNO - Desabilitado
+--------------------------------------------------------------------------
+ALTERAÇÃO    DATA 15 de dez de 2021 às 12:01  ||
+--------------------------------------------------------------------------  
+PASTA      |-> resources\views\Dashboard_Principal\Formularios\
+           |-> public\js\apis\newSolicitation        
+ARQUIVO     |-> Formulario.blade.php 
+            |-> actions_formulario.js
+
+
+Titulo[
+    HC -Validação de Horário
+]
+
+DESCRIÇÂO [
+Problema: horários 00:00 .... são reconhecido como menores, quando comparados com o horário noturno.
+--------------------------------------------------------------------------
+ALTERAÇÃO    DATA 15 de dez de 2021 às 12:02 || 16 de dez de 2021 às 13:58 
+--------------------------------------------------------------------------  
+PASTA      |-> resources\views\Dashboard_Principal\Formularios\
+	    |-> public\js\apis\pesquisa_solicitacoes\new_Pesq.js
+           |-> public\js\apis\newSolicitation        
+ARQUIVO     |-> Formulario.blade.php 
+            |-> actions_formulario.js
+            |->new_Pesq.js
+
+
+Titulo[
+   HC - Validação KM (EDITAR e New Soliciitação)
+]
+
+DESCRIÇÂO [
+ HC - Validação KM (EDITAR e New Soliciitação)
+
+--------------------------------------------------------------------------
+CRIAÇÃO DATA 15 de dez de 2021 às 12:02 || 16 de dez de 2021 às 13:58 
+--------------------------------------------------------------------------  
+PASTA      |-> public\js\slick\
+	   |-> public\js\slick
+           |->  public/css/
+           |->resources\views\Dashboard_Principal\Avisos_Admin
+   
+ARQUIVO    
+           |->js/slick/slick.min.js
+           |->Js/slick/slick.js
+           |->js/slick/setup.js
+
+           |->css/slick.css
+           |->css/slick-theme.css
+           |->css/infos.css
+           |->aviso_Admin.blade.php
+           
+Titulo[
+    HC - carrosel no Card 
+]
+
+DESCRIÇÂO [
+Criar carrosel para os cards
+--------------------------------------------------------------------------
+ALTERACAO DATA 16 de dez de 2021 às 14:57 até 28 de dez de 2021 às 09:12
+--------------------------------------------------------------------------  
+PASTA      |-> resources\views\Dashboard_Principal\Avisos_Admin\
+	   |-> public\js\apis\aviso_api\
+   
+ARQUIVO    
+           |->aviso_Admin.blade.php
+           |->aviso.js
+          
+
+           
+Titulo[
+    HC - Criar modal para editar as solicitações da aba Solicitações em Andamento
+]
+
+DESCRIÇÂO [
+Criar modal para editar as solicitações da aba Solicitações em Andamento
+--------------------------------------------------------------------------
+CRIAÇÃO DATA 16 de dez de 2021 às 14:57
+--------------------------------------------------------------------------  
+PASTA      |-> resources\views\Dashboard_Principal\Avisos_Admin\
+	   |-> public\js\apis\aviso_api\
+   	   |->app\Http\Controllers\Api\Avisos
+ARQUIVO    
+           |->aviso_Admin.blade.php
+           |->aviso.js
+           |->app\Http\Controllers\Api\Avisos\Avisos.php
+           
+           
+Titulo[
+    HC - Criar modal para editar as solicitações da aba Solicitações em Andamento
+]
+
+DESCRIÇÂO [
+public function getAvisos()
+{
+    $var = DB::select("SELECT
+    DISTINCT
+    s.id AS id_sol,
+    s.n_ficha AS n_ficha,
+    m.nome AS nome_motorista,
+    sol.nome AS nome_solicitante,
+    u.name AS usuario
+    FROM 
+    solicitacao s 
+        LEFT JOIN 
+        motorista m ON s.fk_motorista = m.id
+        LEFT JOIN 
+        solicitante sol ON s.fk_solicitante = sol.id
+        LEFT JOIN 
+        users u ON s.fk_usuario = u.id
+    WHERE 
+    s.ida = 'OK'
+    AND s.retorno = 'NOK'
+    AND s.cancelamento = 'NOK'
+    ORDER BY CAST(s.data AS DATE), CAST(s.data AS TIME)");
+
+    return json_encode($var);
+}
+$(function () {
+tableAviso();
+});
+
+function tableAviso() {
+$.ajax({
+method: 'GET',
+url: 'http://127.0.0.1:8000/api/get_avisos',
+success: function (e) {
+$('.listagem_s').remove();
+let data = JSON.parse(e);
+
+        data.forEach(function (dados) {
+            $('#corpo_tabela_avisos').append(`<tr class="listagem_s">
+                    <th class="aviso n_ficha  text-center align-middle" >${dados.n_ficha}</th>
+                    <th class="aviso n_ficha  text-center align-middle" >${dados.nome_motorista}</th>
+                    <th class='d-flex-align-center text-center align-middle'><span class='badge badge-pill badge-primary text-center align-middle'><i class='fa fa-truck mr-1'></i> Solicitação em Andamento</span></th>
+                    <th class="aviso n_ficha  text-center align-middle" >${dados.nome_solicitante}</th>
+                    <th class="aviso n_ficha  text-center align-middle" >${dados.usuario}</th>
+                    <th> <button value='${dados.id_sol}' onclick='editSolicitation(${dados.id_sol});' type='button' class='btn btn-sm btn-secondary mr-1 myBtnE' id='myBtn2' ><i class='fa fa-edit'></i> Editar</button></th>
+                </tr>
+                `);
+        })
+    }
+});
+}
+HTML
+@extends('Dashboard_Principal.Dashboard_HC', ['current' => 'aviso'])
+@section('conts')
+<div class="conteudo_cadastro_avisos" id="conteudo_avisos">
+<div class="box_de_cadastro_avisos">
+<div class="header_cadastr_avisos">
+<i class="fa fa-edit mr-2 text-light" style="font-size: 20px;"></i>
+<h4 class="font-weight-light text-light mb-0">Avisos</h4>
+</div>
+<div class="body_cadastro_avisos">
+@csrf
+<table class="table table-bordered table-striped table-sm mt-2" style="border-radius: 12px">
+<thead class="bg-secondary text-light">
+<tr>
+<th scope="col" class="aviso font-weight-light text-center align-middle">Nº Ficha</th>
+<th scope="col" class="aviso font-weight-light text-center align-middle">Motorista</th>
+<th scope="col" class="aviso font-weight-light text-center align-middle">Status</th>
+<th scope="col" class="aviso font-weight-light text-center align-middle">Solicitante</th>
+<th scope="col" class="aviso font-weight-light text-center align-middle">Usuário</th>
+<th scope="col" id= "op" class="aviso font-weight-light text-center align-center">Opções</th>
+</tr>
+</thead>
+<tbody id="corpo_tabela_avisos">
+
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+
+
+<div id="myModal4" class="modal">
+</div>
+{{-- MODAL Editar --}}
+<div id="modal_aviso" class="modal">
+</div>
+
+</div>
+
+<script src="{{ asset('js/jquery.js') }}"></script>
+<script src="{{asset('js/apis/aviso_api/aviso.js')}}"></script>
+@endsection
+debora freire 22 de dez de 2021 às 08:51
+Rota API
+Route::get('/get_avisos',[Avisos::class, 'getAvisos'])->name('hc.api.getAvisos');
+
+ROTA WEB
+Route::get('/hc_aviso', [MakeViews::class,'makeView_Avisos'])->name('hc_aviso');
+HC - Adicionar uma nova aba para verificar solicitações em andamento
+--------------------------------------------------------------------------
+CRIAÇÃO DATA 15 de dez de 2021 às 12:02 || 16 de dez de 2021 às 13:58 
+--------------------------------------------------------------------------  
+PASTA      
+   
+ARQUIVO    
+DOCUMENTACAO_TECNICA.DOCX
+           
+           
+Titulo[
+    Documentação HC- (ATUALIZAR) novas APIS
+]
+
+DESCRIÇÂO [
+Documentação HC- (ATUALIZAR) novas APIS
+--------------------------------------------------------------------------
+ALTERACAO DATA 14 de jan às 17:00 ATE 19 de jan às 14:02
+--------------------------------------------------- -----------------------  
+PASTA      
+public\js\apis\motorista_api\
+public\js\apis\solicitante_api\
+public\js\apis\veiculos_api\
+ARQUIVO    
+cadastro_Motorista.js
+cadastro_Solicitante
+cadastro_Veiculo.js
+           
+           
+Titulo[
+    HC- Módulo de pesquisa de solicitante.
+]
+
+DESCRIÇÂO [
+$("#pesq").on("keyup", function () {
+var value = $(this).val().toLowerCase();
+$("#corpo_lista_<> tr").filter(function () {
+$(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+});
+});
+--------------------------------------------------------------------------
+ALTERACAO DATA 14 de jan às 17:00 ATE 19 de jan às 14:02
+--------------------------------------------------- -----------------------  
+           
+Titulo[
+    HC - Relatório atendimento por motorista
+]
+
+DESCRIÇÂO [
+Foi feita apenas queryes  e teste no meu ambiente.
+--------------------------------------------------------------------------
+ALTERACAO DATA 10 de fev às 13:18
+--------------------------------------------------- -----------------------  
+PASTA 
+resources\views\Login\  
+public\img
+ARQUIVO
+Login_HC.blade.php  
+Titulo[
+HC - mudar Logo VS 
+]
+
+DESCRIÇÂO [
+mudar Logo VS para SVG 
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Importante: HOUVERAM MUITAS ALTERAÇÕES FEITAS DEPOIS DESSE HISTÓRICO QUE NÃO FOI DOCUMENTADO, VERIFICADO POR UM VERSIONADOR DE CÓDIGO, POR ESSE MOTIVO AS ATUALIZAÇÕES SÓ SÃO VÁLIDAS NESSE DOCUMENTO ATÉ A DATA FINAL ESCRITO NESSE "DOCUMENTO", OUTRAS ATUALIZAÇÕES DEPOIS DESSA DATA SERÃO QUE SER ANALISÁDA ACORDO.
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

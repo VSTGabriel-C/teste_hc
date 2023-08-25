@@ -1,0 +1,151 @@
+.container_full_relatorio
+    {
+        width: 100%;
+        display: flex;
+        min-height: 478px;
+        max-height: 100%;
+    }
+
+    .container-left-data-hora
+    {
+        width: 100%;
+        padding: 25px;
+        height: 100%;
+
+    }
+
+    .formulario_relatorio
+    {
+        width: 100%;
+        height: 100%;
+        display: flex;
+    }
+
+    .first_cont_rel
+    {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 63%;
+    }
+
+    .datas_hora
+    {
+        width: 35%;
+        height: 100%;
+        background-color: white;
+        border-radius: 10px;
+        border: 1px solid rgb(170, 170, 170);
+    }
+
+    .titulo_container_rel
+    {
+        height: 13%;
+        padding: 1px;
+        border-radius: 10px 10px 0px 0px;
+    }
+    .titulo_container_rel label
+    {
+        margin-bottom: 0;
+        margin-left: 5px;
+        color: rgb(87, 87, 87);
+    }
+
+    .hr_personal
+    {
+        height: 2%;
+        width: 95%;
+        background-color: rgb(161, 160, 160);
+    }
+
+    .first_cont_data
+    {
+        width: 100%;
+        display: flex;
+        justify-content: space-around;
+    }
+    .first_cont_hora
+    {
+        width: 100%;
+        display: flex;
+        justify-content: space-around;
+    }
+    .first_cont_data .titulo_input label
+    {
+        margin-bottom: 0px;
+        font-size: 12px;
+    }
+    .first_cont_hora .titulo_input label
+    {
+        margin-bottom: 0px;
+        font-size: 12px;
+    }
+
+    .input_de_data
+    {
+        font-size: 12px;
+        border-radius: 5px;
+        border: 1px solid rgb(124, 124, 124);
+        height: 52%;
+        padding-left: 5px;
+    }
+    .input_de_hora
+    {
+        font-size: 12px;
+        border-radius: 5px;
+        height: 50%;
+        border: 1px solid rgb(124, 124, 124);
+        width: 100%;
+        padding-left: 5px;
+    }
+
+    .container_de_datas
+    {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .hr_sinal
+    {
+        margin-top: 0px;
+        height: 1px;
+        width: 95%;
+        background-color: rgb(161, 160, 160);
+    }
+
+    .container_select_tip_rel
+    {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        justify-content: center;
+        
+    }
+
+    .select_rel_tip
+    {
+        font-size: 0.8rem;
+        border-radius: 5px;
+    }
+
+    .container_btn_rel
+    {
+        padding: 10px;
+        display: flex;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .button-gerar-xls
+    {
+        height: 1.9rem;
+    }
+    .button-gerar-xls label
+    {
+        height: 1rem;
+        font-weight: 300px;
+    }
+
+

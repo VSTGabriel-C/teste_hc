@@ -1,0 +1,11 @@
+#sair_sistema {
+    width: 23%;
+}
+@media screen and (min-device-width: 300px) and (max-device-width: 412px) {
+    #sair_sistema {
+        display: flex;
+        flex-wrap: wrap;
+        align-content: space-around;
+        width: 96%;
+    }
+}

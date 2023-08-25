@@ -1,0 +1,404 @@
+--------------------------------------------------------------------------
+ALTERAR                                                                   ||
+--------------------------------------------------------------------------  
+PASTA      |-> routes
+ARQUIVO         |-> api.php
+       
+
+DESCRIÇÃO [
+    ADICIONANDO ROTA DE ALTA QUILOMETRAGEM.
+]
+
+CODIGO [
+    Route::get("/get_QuilometragemModal", [V_informacoes::class, "get_QuilometragemModal"])->name("hc.api.QuilometragemModal");
+]
+--------------------------------------------------------------------------
+FIM DA ALTERAÇÃO                                                          ||
+-------------------------------------------------------------------------- 
+
+--------------------------------------------------------------------------
+ALTERAR                                                                   ||
+--------------------------------------------------------------------------  
+PASTA       |-> app
+                |-> Http
+                    |-> Controllers
+                        |-> Api
+                            |-> Apis_infos
+ARQUIVO                         |-> V_informacoes.php
+       
+
+DESCRIÇÃO [
+    ADICIONANDO API DA NOVA ROTA DE ALTA QUILOMETRAGEM.
+]
+
+CODIGO [
+    public function get_QuilometragemModal(Request $request){
+
+        $arr = [];
+        $query = "SELECT DISTINCT
+            s.id,
+            s.n_ficha AS numero_ficha,
+            s.end_loc_ident AS End_Loc_ident,
+            s.atendida_por,
+            s.destino,
+            s.`data` AS data_solicitacao,
+            IFNULL(di.km, 0) AS sol_km,
+            IFNULL(ch.km, 0) AS ch_kilometro,
+            IFNULL(vt.km, 0) AS vt_kilometro
+        FROM
+            solicitacao s
+                LEFT JOIN
+            dir_ch ch ON s.id = ch.fk_solicitation_ch
+                LEFT JOIN
+            dir_volta vt ON s.id = vt.fk_solicitation
+                LEFT JOIN
+            distancia_perc dp ON dp.id = s.fk_dist_perc
+                LEFT JOIN
+            dir_ida di ON di.id = dp.fk_saida
+        WHERE (ch.aviso_ch = 1 or vt.aviso_vt = 1)
+        GROUP BY s.id , CAST(data_solicitacao AS DATE)
+        ORDER BY s.id asc;";
+
+        $sql = new SQL();
+        $exec = $sql->select($query);
+
+        if(count($exec) > 0)
+        {
+            $newValues = $exec;
+            //return json_encode($newValues, JSON_UNESCAPED_UNICODE);
+            
+            $arr[] = ['data' => $newValues];
+            $smS = $arr;
+
+        return json_encode($smS, JSON_UNESCAPED_UNICODE);  
+        }else
+        {
+            return json_encode($msg = array(
+                "status"    => 0,
+                "msg"       => "Não foi possivel encontar solicitações com alta quilometragem." 
+            ), JSON_UNESCAPED_UNICODE);
+        }
+
+    }
+]
+
+DESCRIÇÃO [
+    ALTERANDO A API DA QUAL FORNECIA O NUMERO DE SOLICITAÇÕES QUE ALIMENTAVA OS CARDS.
+    AGORA ELA FORNECE TAMBÉM O NÚMERO DE SOLICITAÇÕES COM ALTA QUILOMETRAGEM
+]
+CODIGO [
+    public function number_Solicitations()
+    {
+        $data_atual = date("Y-m-d");
+        $em_andamento = 0;
+        $concluida = 0;
+        $cancelada = 0;
+        $newArr = array();
+       
+        $queryQuilometragem = DB::select("SELECT DISTINCT
+            COUNT(s.id) as total
+        FROM
+            solicitacao s
+                LEFT JOIN
+            dir_ch ch ON s.id = ch.fk_solicitation_ch
+                LEFT JOIN
+            dir_volta vt ON s.id = vt.fk_solicitation
+        WHERE (ch.aviso_ch = 1 or vt.aviso_vt = 1);");
+
+        $total = $queryQuilometragem[0];
+
+
+
+        $solicitacao_dia = DB::select("SELECT
+        distinct
+        s.data AS data_solicitacao,
+        COUNT(1) AS solicitacao_dia
+        FROM
+        solicitacao s
+        WHERE CAST(s.data AS DATE) >= '{$data_atual}'
+        AND CAST(s.data AS DATE) <= '{$data_atual}'
+        GROUP BY  s.data");
+
+        $status = DB::select("SELECT
+        s.retorno,
+        s.cancelamento,
+        s.ida
+        FROM
+        solicitacao s
+        WHERE CAST(s.data AS DATE) >= '{$data_atual}'
+        AND CAST(s.data AS DATE) <= '{$data_atual}'");
+
+        
+
+        if(count($solicitacao_dia) > 0 && count($status) > 0)
+        {
+            foreach($status as $key => $value)
+            {
+                if($value->retorno == "NOK" && $value->cancelamento == "NOK" && $value->ida == 'OK')
+                {
+                    $em_andamento = $em_andamento + 1;
+                    
+                }else if($value->retorno == "OK" && $value->cancelamento == "NOK" )
+                {
+                    $concluida = $concluida + 1;
+                }else if($value->retorno == "NOK" && $value->ida == 'NOK' && $value->cancelamento == "OK" )
+                {
+                    $cancelada = $cancelada + 1;
+                }                 
+            }
+           
+            $newArr[] = [
+                "qtde_dia" => $solicitacao_dia[0]->solicitacao_dia,
+                "qtde_concluida" => $concluida,
+                "qtde_andamento" => $em_andamento,
+                "qtde_cancelamento" => $cancelada,
+                "qtde_quilometragem" => $total -> total,
+            ];
+        }else{
+            $newArr[] = [
+                "qtde_dia" => 0,
+                "qtde_concluida" => $concluida,
+                "qtde_andamento" => $em_andamento,
+                "qtde_cancelamento" => $cancelada,
+                "qtde_quilometragem" => $total -> total,
+            ];
+        }
+
+        
+        return json_encode($newArr);
+        
+    }
+]
+
+--------------------------------------------------------------------------
+FIM DA ALTERAÇÃO                                                          ||
+-------------------------------------------------------------------------- 
+
+--------------------------------------------------------------------------
+ALTERAR                                                                   ||
+--------------------------------------------------------------------------  
+PASTA       |-> public   
+                |-> js
+                    |-> chart
+ARQUIVO                 |-> Chart.js
+
+DESCRIÇÃO [
+    ALTERANDO A FUNÇÃO PARA PREENCHER TAMBÉM O NUMERO DE SOLICITAÇÕES DO CARD DE ALTA QUILOMETRAGEM
+]
+
+CODIGO [
+function chargeCards()
+{
+    $.ajax({
+        method: 'GET',
+        url: 'http://127.0.0.1:8000/api/get_solicitation',
+        success: function(e)
+        {
+            data = JSON.parse(e);
+            console.log(data)
+            data.forEach(function(item, index){
+                $("#sol_diario").append(`<b>${item.qtde_dia}</b>`)
+                $("#sol_concluida").append(`<b>${item.qtde_concluida}</b>`)
+                $("#sol_andamento").append(`<b>${item.qtde_andamento}</b>`)
+                // $("#qnt_instituto").append(`<b>${item.qtde_instituto}</b>`)
+                $("#qnt_cancelamento").append(`<b>${item.qtde_cancelamento}</b>`)
+                $("#qnt_quiloA").append(`<b>${item.qtde_quilometragem}</b>`)
+                // if (data.length = 0) {
+                //     $("#sol_diario").append(`<b>teste/b>`)
+                //     $("#sol_concluida").append(`<b>teste</b>`)
+                //     $("#sol_andamento").append(`<b>teste</b>`)
+                // }
+                
+                
+            })
+
+        }
+    })
+}
+]
+
+--------------------------------------------------------------------------
+FIM DA ALTERAÇÃO                                                          ||
+-------------------------------------------------------------------------- 
+
+--------------------------------------------------------------------------
+ALTERAR                                                                   ||
+--------------------------------------------------------------------------  
+PASTA       |-> public   
+                |-> js
+                    |-> chart
+ARQUIVO                 |-> Modalsinfo.js
+
+DESCRIÇÃO [
+    ADICIONANDO FUNÇÕES PARA ABRIR E PREENCHER CONTEUDO DA NOVA MODAL DE INFORMAÇÕES DE QUILOMETRAGEM ALTA.
+]
+
+CODIGO [
+$('a[href$="#ModalQuilometragem"]').on( "click", function(e) {
+    modalQuilometragem();
+  });
+
+$("#fecharQuilometragem").on( "click", function(e) {
+    modalClose10();
+  });
+
+function modalQuilometragem() {
+    $.ajax({
+      method: "GET",
+      url: "http://127.0.0.1:8000/api/get_QuilometragemModal",
+      success: function(e)
+      {
+        var data = JSON.parse(e);
+        if(data.status == 0)
+        {
+          var p = $(`<div class="alert1">
+          <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+          ${data.msg}
+          </div>`);
+          p.hide()
+          $('#content_modal_Quilometragem').append(p);          // "appendê-lo" ou "appendar" o <p>
+          p.fadeIn(500, function()
+          {
+              window.setTimeout(function(){
+                  p.fadeOut();
+              },2000)
+          }); 
+        }else
+        {
+          $('.ss').remove()
+          $('#cont_quilometragem').append(`<table class='table table-bordered ss table-sm'>
+          <thead>
+            <tr class='bg-secondary '>
+              <th class="font-weight-light text-center align-middle">Data</th>
+              <th class="font-weight-light text-center align-middle">N Ficha</th>
+              <th class="font-weight-light text-center align-middle">End/Loc</th>
+              <th class="font-weight-light text-center align-middle">Destino</th>
+              <th class="font-weight-light text-center align-middle">Confirmação</th>
+              <th class="font-weight-light text-center align-middle">KM Inicial</th>
+              <th class="font-weight-light text-center align-middle">KM Chegada</th>
+              <th class="font-weight-light text-center align-middle">KM Retorno</th>
+              <th class="font-weight-light text-center align-middle">Diferença KM</th>
+              <th class="font-weight-light text-center align-middle">Status</th>
+            </tr>
+          </thead>
+          <tbody id='corpo_lista_Quilometragem'>
+            
+          </tbody>
+        </table>`);
+        data.forEach(function(item)
+        {
+          item.data.forEach(function(dados)
+          {
+            $('#corpo_lista_Quilometragem').append(makeTableModalQuilo(dados));
+          })
+           })
+        }
+      }
+  })
+      var modal = document.getElementById("modalQuilometragem");
+      var conteudo = document.getElementById("content_modal_Quilometragem");
+      modal.style.display = "block";
+      modal.style.paddingTop = "75px";
+      // modal.style.paddingLeft = "100px";
+      conteudo.style.width = "95%";
+  
+  }
+
+function modalClose10() {
+    var modal = document.getElementById("modalQuilometragem");
+    modal.style.display = "none";
+  }
+
+function makeTableModalQuilo(dataD)
+{
+  let diferenca = 0
+ 
+    diferenca = dataD.vt_kilometro - dataD.sol_km
+ 
+    let table =``
+    table += `<tr>
+    <th class="text-center align-middle">${dataD.data_solicitacao}</th>
+    <th class="text-center align-middle">${dataD.numero_ficha}</th>
+    <th class="text-center align-middle">${dataD.End_Loc_ident}</th>
+    <th class="text-center align-middle">${dataD.destino}</th>
+    <th class="text-center align-middle">${dataD.atendida_por}</th>
+    <th class="text-center align-middle">${dataD.sol_km}</th>
+    <th class="text-center align-middle">${dataD.ch_kilometro}</th>
+    <th class="text-center align-middle">${dataD.vt_kilometro}</th>
+    <th class="text-center align-middle">${diferenca}</th>
+    <th class='d-flex-align-center text-center align-middle'><span class='text-weight-light badge badge-pill badge-warning text-center align-middle'><i class="fa fa-triangle-exclamation"></i> Alta Quilômetragem</th>
+    </th>
+   </tr>`
+;
+    return table
+}
+]
+
+--------------------------------------------------------------------------
+FIM DA ALTERAÇÃO                                                          ||
+-------------------------------------------------------------------------- 
+
+--------------------------------------------------------------------------
+ALTERAR                                                                   ||
+--------------------------------------------------------------------------  
+PASTA       |-> resources   
+                |-> views
+                    |-> infos_Admin
+ARQUIVO                 |-> infor_admin.blade.php
+
+DESCRIÇÂO [
+    Adicionado card de alta quilometragem ao carossel.
+]
+
+CODIGO [
+    <div class="cards_infos4" >
+        <div class="container-interno-card">
+            <div class="textos_contss">
+                <div class="first_text">
+                    <h5 id="qnt_quiloA"></h5>
+                </div>
+                <div class="second_text">
+                    <h5><b>Alta Quilometragem.</b></h5>
+                </div>
+            </div>
+            <div class="icone_contss">
+                <i class="fa fa-triangle-exclamation"></i>
+            </div>
+        </div>
+        <div class="container_text_button4">
+            <a href="#ModalQuilometragem"><i class="fa fa-arrow-circle-right"></i> Mais informações</a>
+        </div>
+    </div>
+]
+
+DESCRIÇÂO [
+    Adicionado modal de mais informações referente ao card de alta quilometragem.
+]
+
+CODIGO [
+    <div class="modal" id="modalQuilometragem">
+        <div class="modal-content" id="content_modal_Quilometragem">
+    
+            <div class="modal-header">
+                <h5 class="Modal-title">Alta Quilometragem</h5>
+                <button type="button" id='fecharX5' class="close">
+                    <span class="close" style="margin-bottom: -3px">&times;</span>
+                </button>
+            </div>
+    
+            <div id="cont_quilometragem" class="modal-body">
+                
+            </div>
+    
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" id='fecharQuilometragem'>Fechar</button>
+            </div>
+    
+        </div>
+    </div>
+]
+
+--------------------------------------------------------------------------
+FIM DA ALTERAÇÃO                                                          ||
+-------------------------------------------------------------------------- 
+

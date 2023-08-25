@@ -1,0 +1,84 @@
+.conteudos_alterar_user
+{
+    display: flex;
+    width: 100%;
+    padding: 20px;
+    justify-content: space-around;
+}
+
+.acoes_user
+{
+    display: flex;
+    justify-content: space-between
+}
+
+.box_listagem_usuarios
+{
+    display: flex;
+    flex-direction: column;
+    width: 90%;
+    
+}
+
+.corpo_lista_user
+{
+    width: 50%;
+    padding: 20px;
+}
+
+.header_add
+{
+    width: 95%;
+    border-radius: 15px 15px 0px 0px;
+    height: 60px;
+    color: white;
+    display: flex;
+    padding: 19px;
+    align-items: center;
+    background-color: var(--secondary);
+}
+.header_add1
+{
+    width: 100%;
+    border-radius: 15px 15px 0px 0px;
+    height: 60px;
+    color: white;
+    display: flex;
+    padding: 19px;
+    align-items: center;
+    background-color: var(--secondary);
+}
+
+.table_list_user
+{
+    
+    display: flex;
+    width: 100%;
+    padding: 5px;
+    border: 1px solid var(--secondary);
+    background-color: rgb(243, 242, 242);
+    flex-direction: column;
+}
+
+.mytbl
+{
+    table-layout: auto;
+}
+
+
+.Vfoto2 {
+    font-size: 12px;
+    padding: 1%;
+    width: 10%;
+    background-color: #6c757d;
+    border-color: #6c757d;
+    display: flex;
+    border: 1px solid transparent;
+    border-radius: 0.25rem;
+}
+
+.sel_foto {
+    margin: auto;
+    font-family:'Roboto', sans-serif;
+    font-weight: normal;
+}

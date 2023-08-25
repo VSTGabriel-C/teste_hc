@@ -1,0 +1,878 @@
+--------------------------------------------------------------------------
+ALTERAR                           Inicio  09-02-2022   -  Fim 09-02-2022                                ||
+--------------------------------------------------------------------------  
+PASTA       |-> app
+                |-> Http
+                    |-> Controllers
+                        |-> Api
+                            |-> V_Solicitacoes
+ARQUIVO                         |-> Editar_Solicitacoes.php
+       
+
+DESCRIÇÃO [
+    ADICIONANDO 0 OU 1 NAS TABELAS DOS QUILOMETROS CASO TENHA A CONFIRMAÇÃO DE ALTA QUILOMETRAGEM
+]
+
+CODIGO [
+
+$confirmaKM_ch = $request->check_ch;
+$confirmaKM_vt = $request->check_vt;
+
+if($nn['chegada_id'] == 0 || $nn['chegada_id'] == "")
+{
+    DB::insert("INSERT INTO dir_ch
+    (horario, km, aviso_ch, fk_solicitation_ch)
+    VALUES
+    (?, ?, ?, ?)",
+    [
+        $hora_chegada,
+        $km_chegada,
+        $confirmaKM_ch,
+        $id
+    ]);
+}else if($nn['chegada_id'] != 0 || $nn['chegada_id'] != "")
+{
+    DB::update("UPDATE dir_ch ch1
+    SET ch1.horario = ?,
+    ch1.km = ?,
+    ch1.aviso_ch = ?
+    WHERE ch1.fk_solicitation_ch = ?",
+    [
+        $hora_chegada,
+        $km_chegada,
+        $confirmaKM_ch,
+        $id
+    ]);
+}
+if($nn['volta_id'] == 0 || $nn['volta_id'] == "")
+{
+    DB::insert("INSERT INTO dir_volta
+    (horario, km, aviso_vt, fk_solicitation)
+    VALUES
+    (?, ?, ?, ?)",
+    [
+        $hora_retorno,
+        $km_retorno,
+        $confirmaKM_vt,
+        $id
+    ]);
+
+}else if($nn['volta_id'] != 0 || $nn['volta_id'] != "")
+{
+    DB::update("UPDATE dir_volta vt
+    SET vt.horario = ?,
+    vt.km = ?,
+    vt.aviso_vt = ?
+    WHERE 
+    vt.fk_solicitation = ?",
+    [
+        $hora_retorno,
+        $km_retorno,
+        $confirmaKM_vt,
+        $id
+    ]);
+
+}
+
+]
+--------------------------------------------------------------------------
+FIM DA ALTERAÇÃO                                                          ||
+-------------------------------------------------------------------------- 
+
+--------------------------------------------------------------------------
+ALTERAR              Inicio  09-02-2022   -  Fim 09-02-2022               ||                                      ||
+--------------------------------------------------------------------------  
+PASTA       |-> public
+                |-> js
+                    |-> apis
+                        |-> pesquisa_solicitacoes
+ARQUIVO                     |-> new_Pesq.js
+             
+       
+
+[DESCRIÇÃO [
+    ALTERANDO A FORMA COMO É CHAMADA A FUNÇÃO DE UPDATE DA SOLICITAÇÃO, AGORA ELA CHAMA UMA FUNÇÃO DE VALIDAÇÃO
+    DE KM E ESSA FUNÇÃO CHAMA A FUNÇÃO DE UPDATE.
+]
+
+CODIGO [
+<button id="envia" class="btn btn-secondary" onclick="validaKMS(${data.id_solicitacao});"><i class="fa fa-save mr-2"></i>Salvar</button>
+]]
+
+[DESCRIÇÃO [
+    CRIANDO A FUNÇÃO DE VALIDAR KMS E CHAMAR A MODAL CASO OS KMS SEJAM ALTOS.
+]
+
+CODIGO [
+function validaKMS(id){
+
+    let km_chegada = document.getElementById('ch_c').value
+    let km_retorno = document.getElementById('ret_r').value
+    let km_inicial = document.getElementById('sol_km').value
+    let km_max = parseInt(km_inicial)+30
+  
+    if ($('#cancelamento_check:checked').length < 1) {
+    if (parseInt(km_retorno) < parseInt(km_chegada)) {
+      var p = $(`<div class="alert1"> 
+        <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;
+        </span> Falha ao editar.O quilomêtro de retorno não pode ser menor que a chegada. 
+      </div>`);
+      p.hide()
+      $('.conteudos').append(p);
+      p.fadeIn(500, function () {
+          window.setTimeout(function () {
+              p.fadeOut();
+          }, 2000)
+      });
+  
+      return false;
+  }
+  if (parseInt(km_inicial) > parseInt(km_chegada)) {
+    var p = $(`<div class="alert1"> 
+      <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;
+      </span> Falha ao editar.O quilomêtro de chegada não pode ser menor que o inicial. 
+    </div>`);
+    p.hide()
+    $('.conteudos').append(p);
+    p.fadeIn(500, function () {
+        window.setTimeout(function () {
+            p.fadeOut();
+        }, 2000)
+    });
+  
+    return false;
+  }
+  if(parseInt(km_chegada) > km_max){
+    texto = `<div id='LimpabEXKM'>
+    <label for="staticEmail" style='font-size: initial;'>A quilometragem inicial informada foi de </label>
+    <b style='font-weight: bold !important;'>${km_inicial} KMs.</b>
+    <br></br>
+    <label for="staticEmail" style='font-size: initial;'>A quilometragem de chegada ao local informada foi de </label>
+    <b style='font-weight: bold !important;'>${km_chegada} KMs.</b>
+    <br></br>
+    <labelfor="staticEmail" style='font-size: initial;'>Existe uma diferença de ${parseInt(km_chegada)-parseInt(km_inicial)} KMs.</label>
+    <labelfor="staticEmail" style='font-size: initial;'>Você confirma que estes dados estão corretos?</label>
+    </div>`
+    modalExcessoQuilometragem(texto);
+    $("#btnCEX").on("click", ()=>{
+      fechaModal();
+      $('#LimpabEXKM').remove()
+      updateSolicitation(id,1,0);
+    });
+  }else if(parseInt(km_retorno)+(parseInt(km_chegada)- km_max) > km_max){
+    texto = `<div id='LimpabEXKM'>
+    <label for="staticEmail">A quilometragem de retorno informada foi de </label>
+    <b style='font-weight: bold !important;'>${km_retorno} KMs.</b>
+    <br></br>
+    <labelfor="staticEmail">Os dados informados como quilometros inicias e de chegada ao destino não condizem com a quilometragem de retorno.</label>
+    <br></br>
+    <labelfor="staticEmail">Existe uma diferença de ${(parseInt(km_retorno)+(parseInt(km_chegada)- km_max)) - parseInt(km_inicial)} KMs da quilometragem de chegada ao local indicado.</label>
+    <br></br>
+    <labelfor="staticEmail">E uma diferença de ${parseInt(km_retorno) - parseInt(km_inicial)} KMs do quilômetro inicial informado.</label>
+    <br></br>
+    <labelfor="staticEmail">Você confirma que estes dados estão corretos?</label>
+    </div>`
+    modalExcessoQuilometragem(texto);
+    $("#btnCEX").on("click", ()=>{
+      fechaModal();
+      $('#LimpabEXKM').remove()
+      updateSolicitation(id,0,1);
+    });
+  }else{
+    updateSolicitation(id,0,0);
+  }
+    }else{
+      updateSolicitation(id,0,0);
+    }
+  }
+  
+  
+  function modalExcessoQuilometragem(texto) {
+    var modal = document.getElementById("modalEx");
+    var conteudo = document.getElementById("content_modalEx");
+    modal.style.display = "block";
+    modal.style.paddingTop = "75px";
+    modal.style.paddingRight = "10px";
+    conteudo.style.width = "49%";
+  
+    $('#bEXKM').append(texto);
+  
+  }
+  
+  function fechaModal() {
+  
+    var modal = document.getElementById("modalEx");
+    modal.style.display = "none";
+  }
+]]
+
+[DESCRIÇÃO[
+    ATUALIZANDO ALGUMAS VALIDAÇÕES E ADICIONANDO A CONFIRMAÇÃO DE ALTA QUILOMETRAGEM
+    COMO PARAMETRO PARA A API NA FUNÇÃO DE updateSolicitation
+]
+CODIGO[
+function updateSolicitation(id,check_ch,check_vt)
+{
+  var select = document.getElementById('solicitantes');
+  var text = select.options[select.selectedIndex].text;
+  var select1 = document.getElementById('ch_c');
+  var text1 = select1.text;
+  var select2 = document.getElementById('ret_r');
+  var text2 = select2.text;
+
+
+    //PEGANDO TODOS OS CAMPOS
+    let idaN = "";
+    let utiN = "";
+    let hcN = "";
+    let incorN = "";
+    let ida = document.getElementById('ida_check').checked;
+    let ret = document.getElementById("retorno_check").checked;
+    let canc = document.getElementById("cancelamento_check").checked;
+
+    if (canc) {
+        CLM = "OK"
+
+    } else {
+        CLM = "NOK"
+
+    }
+
+    if(ida)
+    {
+        idaN = "OK"
+    }else
+    {
+        idaN = "NOK"
+    }
+    if(ret)
+    {
+        retN = "OK"
+    }else
+    {
+        retN = "NOK"
+    }
+    //PEGANDO DADOS HC INCOR RADIO
+    
+    let hc = document.getElementById("hc_checkbox").checked;
+    
+    if(hc)
+    {
+        hcN = "OK"
+    }else
+    {
+        hcN = "NOK"
+    }
+    
+    let incor = document.getElementById("incor_checkbox").checked;
+    
+    if(incor)
+    {
+        incorN = "OK"
+    }else
+    {
+        incorN = "NOK"
+    }
+    
+    let uti1 = document.getElementById('UTI').checked;
+    
+    if(uti1)
+    {
+        utiN = "OK"
+    }else
+    {
+        utiN = "NOK"
+    }
+    let d = new Date();
+    let dia = d.getDate();
+    let mes = d.getMonth() + 1;
+    let ano = d.getFullYear()
+    data_atual = ano + '-' + mes + '-' + dia;
+    let hora_saida = document.getElementById('saida_horas').value
+    let hora_chegada = document.getElementById('ch_h').value
+    let hora_retorno = document.getElementById('ret_h').value
+    var solicitacao = $('#data_sol_validation').val()
+    let km_chegada = document.getElementById('ch_c').value
+    let km_retorno = document.getElementById('ret_r').value
+    var confirmacao_ch = check_ch;
+    var confirmacao_vt = check_vt;
+if ($('#cancelamento_check:checked').length < 1) {
+        if (km_retorno == "" && km_chegada == "" || km_chegada == 0 && km_retorno == 0) {
+            var p = $(`<div class="alert1"> 
+          <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;
+          </span> Preencha os campos KM de retorno e Km de chegada. 
+        </div>`);
+            p.hide()
+            $('.conteudos').append(p);
+            p.fadeIn(500, function () {
+                window.setTimeout(function () {
+                    p.fadeOut();
+                }, 2000)
+            });
+
+            return false;
+
+        }
+    }
+    if ($('#cancelamento_check:checked').length < 1) {
+      if(hora_chegada === '' || hora_chegada === null || hora_retorno === '' || hora_retorno === null){
+        var p = $(`<div class="alert1"> 
+        <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;
+        </span> Preencha os campos: Chegada ao destino e Retorno ao A5. 
+        </div>`);
+          p.hide()
+          $('.conteudos').append(p);
+          p.fadeIn(500, function () {
+              window.setTimeout(function () {
+                  p.fadeOut();
+              }, 2000)
+          });
+  
+          return false;
+      }
+    }
+     
+    if (solicitacao > data_atual && hora_chegada <= hora_saida) {
+        var p = $(`<div class="alert1">
+        <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+        Falha ao editar. A hora de chegada ao destino não pode ser menor ou igual a hora de saída.
+        </div>`);
+        p.hide()
+        $('.conteudos').append(p);
+        p.fadeIn(500, function () {
+            window.setTimeout(function () {
+                p.fadeOut();
+            }, 2000)
+        });
+        return false;
+    }
+    if (solicitacao > data_atual && hora_retorno <= hora_chegada) {
+        var p = $(`<div class="alert1">
+      <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+      Falha ao editar. A hora de retorno não pode ser menor ou igual a hora de chegada ao destino.
+      </div>`);
+        p.hide()
+        $('.conteudos').append(p);
+        p.fadeIn(500, function () {
+            window.setTimeout(function () {
+                p.fadeOut();
+            }, 2000)
+        });
+        return false;
+    }
+
+  var data;
+  if ($('#cancelamento_check:checked').length == 1) {
+      data = {
+          n_paciente: document.getElementById('nome_paciente').value,
+          ida: idaN,
+          retorno: retN,
+          cancelamento: CLM,
+          data_sol: $("input[name='data_sol']").val(),
+          hora_sol: $("input[name='hora_sol']").val(),
+          dest_sol: document.getElementById('destino').value,
+          port_sol: document.getElementById('portaria').value,
+          end_loc_ident: document.getElementById('end').value,
+          n_ficha_sol: document.getElementById('n_ficha').value,
+          mot_HC: hcN,
+          mot_INCOR: incorN,
+          mot_radio: document.getElementById("RADIO").value,
+          mot_carro: document.getElementById('carro_disp').value,
+          mot_nome: document.getElementById('mot_id').value,
+          sol_nome: text,
+          ramal_sol: document.getElementById('ramal_sol').value,
+          uti: utiN,
+          oxi: document.getElementById('oxigenio').value,
+          obe: document.getElementById('obeso').value,
+          iso: document.getElementById('isolete').value,
+          mac: document.getElementById('maca').value,
+          amb_isolamento: document.getElementById('ISO').value,
+          amb_iso_qual: document.getElementById('isolamento').value,
+          amb_obito: document.getElementById('obito').value,
+          ida: idaN,
+          contato: document.getElementById('CONTATO').value,
+          nome_func: document.getElementById('ATENDIDA').value,
+          hora_chegada: document.getElementById('ch_h').value = '00:00',
+          hora_retorno: document.getElementById('ret_h').value = '00:00',
+          km_chegada: document.getElementById('ch_c').value = '0000',
+          km_retorno: document.getElementById('ret_r').value = '0000',
+          sol_saida: document.getElementById('saida_horas').value,
+          sol_km: document.getElementById('sol_km').value,
+          check_ch: confirmacao_ch,
+          check_vt: confirmacao_vt
+      }
+  } else {
+      data = {
+          n_paciente: document.getElementById('nome_paciente').value,
+          ida: idaN,
+          retorno: retN,
+          cancelamento: CLM,
+          data_sol: $("input[name='data_sol']").val(),
+          hora_sol: $("input[name='hora_sol']").val(),
+          dest_sol: document.getElementById('destino').value,
+          port_sol: document.getElementById('portaria').value,
+          end_loc_ident: document.getElementById('end').value,
+          n_ficha_sol: document.getElementById('n_ficha').value,
+          mot_HC: hcN,
+          mot_INCOR: incorN,
+          mot_radio: document.getElementById("RADIO").value,
+          mot_carro: document.getElementById('carro_disp').value,
+          mot_nome: document.getElementById('mot_id').value,
+          sol_nome: text,
+          ramal_sol: document.getElementById('ramal_sol').value,
+          uti: utiN,
+          oxi: document.getElementById('oxigenio').value,
+          obe: document.getElementById('obeso').value,
+          iso: document.getElementById('isolete').value,
+          mac: document.getElementById('maca').value,
+          amb_isolamento: document.getElementById('ISO').value,
+          amb_iso_qual: document.getElementById('isolamento').value,
+          amb_obito: document.getElementById('obito').value,
+          contato: document.getElementById('CONTATO').value,
+          nome_func: document.getElementById('ATENDIDA').value,
+          hora_chegada: $("input[name='ch_h']").val(),
+          hora_retorno: $("input[name='ret_h']").val(),
+          km_chegada: document.getElementById('ch_c').value,
+          km_retorno: document.getElementById('ret_r').value,
+          sol_saida: document.getElementById('saida_horas').value,
+          sol_km: document.getElementById('sol_km').value,
+          check_ch: confirmacao_ch,
+          check_vt: confirmacao_vt,
+      }
+  }
+$.ajax({
+    method: 'POST',
+    url: `http://127.0.0.1:8000/api/get_All_by_id/${id}`,
+    data: data,
+    success: function (e) {
+        let data = JSON.parse(e);
+        if (data.status == 0) {
+            var p = $(`<div class="alert1">
+                  <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                  Não foi possivel editar a solicitação
+                  </div>`);
+            p.hide()
+            $('#conteudo_lista_visualiza').append(p);
+            p.fadeIn(500, function () {
+                window.setTimeout(function () {
+                    p.fadeOut();
+                }, 5000)
+            });
+        } else if (data.status == 1) {
+            modalClose1();
+            tableS()
+            var p = $(`<div class="alert">
+                  <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                  ${data.msg}
+                  </div>`);
+            p.hide()
+            $('#conteudo_lista_visualiza').append(p);
+            p.fadeIn('slow', function () {
+                    window.setTimeout(function () {
+                    p.fadeOut();
+                }, 5000)
+            });
+        }
+    }
+});
+}]]
+
+--------------------------------------------------------------------------
+FIM DA ALTERAÇÃO                                                          ||
+-------------------------------------------------------------------------- 
+
+--------------------------------------------------------------------------
+ALTERAR                                                                   ||
+--------------------------------------------------------------------------  
+PASTA       |-> public
+                |-> js
+                    |-> apis
+                        |-> pesquisa_solicitacoes
+ARQUIVO                     |-> pesq_diaria.js
+             
+[DESCRIÇÃO [
+    ALTERANDO A FORMA COMO É CHAMADA A FUNÇÃO DE UPDATE DA SOLICITAÇÃO, AGORA ELA CHAMA UMA FUNÇÃO DE VALIDAÇÃO
+    DE KM E ESSA FUNÇÃO CHAMA A FUNÇÃO DE UPDATE.
+]
+
+CODIGO [
+<button id="envia" class="btn btn-secondary" onclick="validaKMSP(${data.id_solicitacao});"><i class="fa fa-save mr-2"></i>Salvar</button>
+]]
+
+[DESCRIÇÃO [
+    CRIANDO A FUNÇÃO DE VALIDAR KMS E CHAMAR A MODAL CASO OS KMS SEJAM ALTOS.
+]
+
+CODIGO [
+function validaKMSP(id){
+
+    let km_chegada = document.getElementById('ch_c').value
+    let km_retorno = document.getElementById('ret_r').value
+    let km_inicial = document.getElementById('sol_km').value
+    let km_max = parseInt(km_inicial)+30
+  
+    if ($('#cancelamento_check:checked').length < 1) {
+    if (parseInt(km_retorno) < parseInt(km_chegada)) {
+      var p = $(`<div class="alert1"> 
+        <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;
+        </span> Falha ao editar.O quilomêtro de retorno não pode ser menor que a chegada. 
+      </div>`);
+      p.hide()
+      $('.conteudos').append(p);
+      p.fadeIn(500, function () {
+          window.setTimeout(function () {
+              p.fadeOut();
+          }, 2000)
+      });
+  
+      return false;
+  }
+  if (parseInt(km_inicial) > parseInt(km_chegada)) {
+    var p = $(`<div class="alert1"> 
+      <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;
+      </span> Falha ao editar.O quilomêtro de chegada não pode ser menor que o inicial. 
+    </div>`);
+    p.hide()
+    $('.conteudos').append(p);
+    p.fadeIn(500, function () {
+        window.setTimeout(function () {
+            p.fadeOut();
+        }, 2000)
+    });
+  
+    return false;
+  }
+  if(parseInt(km_chegada) > km_max){
+    texto = `<div id='LimpabEXKM'>
+    <label for="staticEmail" style='font-size: initial;'>A quilometragem inicial informada foi de </label>
+    <b style='font-weight: bold !important;'>${km_inicial} KMs.</b>
+    <br></br>
+    <label for="staticEmail" style='font-size: initial;'>A quilometragem de chegada ao local informada foi de </label>
+    <b style='font-weight: bold !important;'>${km_chegada} KMs.</b>
+    <br></br>
+    <labelfor="staticEmail" style='font-size: initial;'>Existe uma diferença de ${parseInt(km_chegada)-parseInt(km_inicial)} KMs.</label>
+    <labelfor="staticEmail" style='font-size: initial;'>Você confirma que estes dados estão corretos?</label>
+    </div>`
+    modalExcessoQuilometragemP(texto);
+    $("#btnCEX").on("click", ()=>{
+      fechaModal();
+      $('#LimpabEXKM').remove()
+      updateSolicitationP(id,1,0);
+    });
+  }else if(parseInt(km_retorno)+(parseInt(km_chegada)- km_max) > km_max){
+    texto = `<div id='LimpabEXKM'>
+    <label for="staticEmail">A quilometragem de retorno informada foi de </label>
+    <b style='font-weight: bold !important;'>${km_retorno} KMs.</b>
+    <br></br>
+    <labelfor="staticEmail">Os dados informados como quilometros inicias e de chegada ao destino não condizem com a quilometragem de retorno.</label>
+    <br></br>
+    <labelfor="staticEmail">Existe uma diferença de ${(parseInt(km_retorno)+(parseInt(km_chegada)- km_max)) - parseInt(km_inicial)} KMs da quilometragem de chegada ao local indicado.</label>
+    <br></br>
+    <labelfor="staticEmail">E uma diferença de ${parseInt(km_retorno) - parseInt(km_inicial)} KMs do quilômetro inicial informado.</label>
+    <br></br>
+    <labelfor="staticEmail">Você confirma que estes dados estão corretos?</label>
+    </div>`
+    modalExcessoQuilometragemP(texto);
+    $("#btnCEX").on("click", ()=>{
+      fechaModal();
+      $('#LimpabEXKM').remove()
+      updateSolicitationP(id,0,1);
+    });
+  }else{
+    updateSolicitationP(id,0,0);
+  }
+    }else{
+      updateSolicitationP(id,0,0);
+    }
+  }
+  
+  
+  function modalExcessoQuilometragemP(texto) {
+    var modal = document.getElementById("modalEx");
+    var conteudo = document.getElementById("content_modalEx");
+    modal.style.display = "block";
+    modal.style.paddingTop = "75px";
+    modal.style.paddingRight = "10px";
+    conteudo.style.width = "49%";
+  
+    $('#bEXKM').append(texto);
+  
+  }
+  
+  function fechaModalP() {
+  
+    var modal = document.getElementById("modalEx");
+    modal.style.display = "none";
+  }
+]]
+
+[DESCRIÇÃO[
+    ATUALIZANDO ALGUMAS VALIDAÇÕES E ADICIONANDO A CONFIRMAÇÃO DE ALTA QUILOMETRAGEM
+    COMO PARAMETRO PARA A API NA FUNÇÃO DE updateSolicitationP
+]
+CODIGO[
+function updateSolicitationP(id,check_ch,check_vt)
+{
+  var select = document.getElementById('solicitantes');
+  var text = select.options[select.selectedIndex].text;
+  var select1 = document.getElementById('ch_c');
+  var text1 = select1.text;
+  var select2 = document.getElementById('ret_r');
+  var text2 = select2.text;
+
+
+    //PEGANDO TODOS OS CAMPOS
+    let idaN = "";
+    let utiN = "";
+    let hcN = "";
+    let incorN = "";
+    let ida = document.getElementById('ida_check').checked;
+    let ret = document.getElementById("retorno_check").checked;
+    let canc = document.getElementById("cancelamento_check").checked;
+
+    if (canc) {
+        CLM = "OK"
+
+    } else {
+        CLM = "NOK"
+
+    }
+
+    if(ida)
+    {
+        idaN = "OK"
+    }else
+    {
+        idaN = "NOK"
+    }
+    if(ret)
+    {
+        retN = "OK"
+    }else
+    {
+        retN = "NOK"
+    }
+    //PEGANDO DADOS HC INCOR RADIO
+    
+    let hc = document.getElementById("hc_checkbox").checked;
+    
+    if(hc)
+    {
+        hcN = "OK"
+    }else
+    {
+        hcN = "NOK"
+    }
+    
+    let incor = document.getElementById("incor_checkbox").checked;
+    
+    if(incor)
+    {
+        incorN = "OK"
+    }else
+    {
+        incorN = "NOK"
+    }
+    
+    let uti1 = document.getElementById('UTI').checked;
+    
+    if(uti1)
+    {
+        utiN = "OK"
+    }else
+    {
+        utiN = "NOK"
+    }
+    let d = new Date();
+    let dia = d.getDate();
+    let mes = d.getMonth() + 1;
+    let ano = d.getFullYear()
+    data_atual = ano + '-' + mes + '-' + dia;
+    let hora_saida = document.getElementById('saida_horas').value
+    let hora_chegada = document.getElementById('ch_h').value
+    let hora_retorno = document.getElementById('ret_h').value
+    var solicitacao = $('#data_sol_validation').val()
+    let km_chegada = document.getElementById('ch_c').value
+    let km_retorno = document.getElementById('ret_r').value
+    var confirmacao_ch = check_ch;
+    var confirmacao_vt = check_vt;
+if ($('#cancelamento_check:checked').length < 1) {
+        if (km_retorno == "" && km_chegada == "" || km_chegada == 0 && km_retorno == 0) {
+            var p = $(`<div class="alert1"> 
+          <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;
+          </span> Preencha os campos KM de retorno e Km de chegada. 
+        </div>`);
+            p.hide()
+            $('.conteudos').append(p);
+            p.fadeIn(500, function () {
+                window.setTimeout(function () {
+                    p.fadeOut();
+                }, 2000)
+            });
+
+            return false;
+
+        }
+    }
+    if ($('#cancelamento_check:checked').length < 1) {
+      if(hora_chegada === '' || hora_chegada === null || hora_retorno === '' || hora_retorno === null){
+        var p = $(`<div class="alert1"> 
+        <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;
+        </span> Preencha os campos: Chegada ao destino e Retorno ao A5. 
+        </div>`);
+          p.hide()
+          $('.conteudos').append(p);
+          p.fadeIn(500, function () {
+              window.setTimeout(function () {
+                  p.fadeOut();
+              }, 2000)
+          });
+  
+          return false;
+      }
+    }
+     
+    if (solicitacao > data_atual && hora_chegada <= hora_saida) {
+        var p = $(`<div class="alert1">
+        <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+        Falha ao editar. A hora de chegada ao destino não pode ser menor ou igual a hora de saída.
+        </div>`);
+        p.hide()
+        $('.conteudos').append(p);
+        p.fadeIn(500, function () {
+            window.setTimeout(function () {
+                p.fadeOut();
+            }, 2000)
+        });
+        return false;
+    }
+    if (solicitacao > data_atual && hora_retorno <= hora_chegada) {
+        var p = $(`<div class="alert1">
+      <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+      Falha ao editar. A hora de retorno não pode ser menor ou igual a hora de chegada ao destino.
+      </div>`);
+        p.hide()
+        $('.conteudos').append(p);
+        p.fadeIn(500, function () {
+            window.setTimeout(function () {
+                p.fadeOut();
+            }, 2000)
+        });
+        return false;
+    }
+
+  var data;
+  if ($('#cancelamento_check:checked').length == 1) {
+      data = {
+          n_paciente: document.getElementById('nome_paciente').value,
+          ida: idaN,
+          retorno: retN,
+          cancelamento: CLM,
+          data_sol: $("input[name='data_sol']").val(),
+          hora_sol: $("input[name='hora_sol']").val(),
+          dest_sol: document.getElementById('destino').value,
+          port_sol: document.getElementById('portaria').value,
+          end_loc_ident: document.getElementById('end').value,
+          n_ficha_sol: document.getElementById('n_ficha').value,
+          mot_HC: hcN,
+          mot_INCOR: incorN,
+          mot_radio: document.getElementById("RADIO").value,
+          mot_carro: document.getElementById('carro_disp').value,
+          mot_nome: document.getElementById('mot_id').value,
+          sol_nome: text,
+          ramal_sol: document.getElementById('ramal_sol').value,
+          uti: utiN,
+          oxi: document.getElementById('oxigenio').value,
+          obe: document.getElementById('obeso').value,
+          iso: document.getElementById('isolete').value,
+          mac: document.getElementById('maca').value,
+          amb_isolamento: document.getElementById('ISO').value,
+          amb_iso_qual: document.getElementById('isolamento').value,
+          amb_obito: document.getElementById('obito').value,
+          ida: idaN,
+          contato: document.getElementById('CONTATO').value,
+          nome_func: document.getElementById('ATENDIDA').value,
+          hora_chegada: document.getElementById('ch_h').value = '00:00',
+          hora_retorno: document.getElementById('ret_h').value = '00:00',
+          km_chegada: document.getElementById('ch_c').value = '0000',
+          km_retorno: document.getElementById('ret_r').value = '0000',
+          sol_saida: document.getElementById('saida_horas').value,
+          sol_km: document.getElementById('sol_km').value,
+          check_ch: confirmacao_ch,
+          check_vt: confirmacao_vt
+      }
+  } else {
+      data = {
+          n_paciente: document.getElementById('nome_paciente').value,
+          ida: idaN,
+          retorno: retN,
+          cancelamento: CLM,
+          data_sol: $("input[name='data_sol']").val(),
+          hora_sol: $("input[name='hora_sol']").val(),
+          dest_sol: document.getElementById('destino').value,
+          port_sol: document.getElementById('portaria').value,
+          end_loc_ident: document.getElementById('end').value,
+          n_ficha_sol: document.getElementById('n_ficha').value,
+          mot_HC: hcN,
+          mot_INCOR: incorN,
+          mot_radio: document.getElementById("RADIO").value,
+          mot_carro: document.getElementById('carro_disp').value,
+          mot_nome: document.getElementById('mot_id').value,
+          sol_nome: text,
+          ramal_sol: document.getElementById('ramal_sol').value,
+          uti: utiN,
+          oxi: document.getElementById('oxigenio').value,
+          obe: document.getElementById('obeso').value,
+          iso: document.getElementById('isolete').value,
+          mac: document.getElementById('maca').value,
+          amb_isolamento: document.getElementById('ISO').value,
+          amb_iso_qual: document.getElementById('isolamento').value,
+          amb_obito: document.getElementById('obito').value,
+          contato: document.getElementById('CONTATO').value,
+          nome_func: document.getElementById('ATENDIDA').value,
+          hora_chegada: $("input[name='ch_h']").val(),
+          hora_retorno: $("input[name='ret_h']").val(),
+          km_chegada: document.getElementById('ch_c').value,
+          km_retorno: document.getElementById('ret_r').value,
+          sol_saida: document.getElementById('saida_horas').value,
+          sol_km: document.getElementById('sol_km').value,
+          check_ch: confirmacao_ch,
+          check_vt: confirmacao_vt,
+      }
+  }
+$.ajax({
+    method: 'POST',
+    url: `http://127.0.0.1:8000/api/get_All_by_id/${id}`,
+    data: data,
+    success: function (e) {
+        let data = JSON.parse(e);
+        if (data.status == 0) {
+            var p = $(`<div class="alert1">
+                  <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                  Não foi possivel editar a solicitação
+                  </div>`);
+            p.hide()
+            $('#conteudo_lista_visualiza').append(p);
+            p.fadeIn(500, function () {
+                window.setTimeout(function () {
+                    p.fadeOut();
+                }, 5000)
+            });
+        } else if (data.status == 1) {
+            modalClose1();
+            tableS()
+            var p = $(`<div class="alert">
+                  <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+                  ${data.msg}
+                  </div>`);
+            p.hide()
+            $('#conteudo_lista_visualiza').append(p);
+            p.fadeIn('slow', function () {
+                    window.setTimeout(function () {
+                    p.fadeOut();
+                }, 5000)
+            });
+        }
+    }
+});
+}]]
