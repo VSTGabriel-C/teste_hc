@@ -20,6 +20,8 @@ class MakeLogin extends Controller
         $check = $request->checkbox;
         $req = $request->all();
 
+        $user = (new User)->login_model($request);
+
         if(empty($email) && empty($senha))
         {
             return redirect()->route('hc_login')->with('msg', 'Impossivel logar no sistema com login e senha fornecidas');
@@ -39,7 +41,7 @@ class MakeLogin extends Controller
         if(is_null($user) || empty($user)){
             return redirect()->route('hc_login')->with('msg', 'Impossivel logar no sistema email fornecido não foi encontrado!');
         }
-	    $decripty = Crypt::decryptString($user->password); 
+	    $decripty = Crypt::decryptString($user->password);
         if($email == $user -> email && $senha == $decripty )
         {
             $admin  = $user->admin;
@@ -73,7 +75,7 @@ class MakeLogin extends Controller
         $hora_atual = date('H:i:s');
         DB::update('UPDATE login_logout set data_logoff = ?,
         hora_logoff = ?
-        WHERE fk_in_off = ?', 
+        WHERE fk_in_off = ?',
         [
             $data_atual,
             $hora_atual,

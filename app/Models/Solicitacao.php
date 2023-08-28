@@ -166,7 +166,7 @@ class Solicitacao extends Model
                     'fk_solicitacao' => $fk_solicitacao,
                 ]);
 
-                $id_i = Direcao_ida::where("id", "=", last_insert_id())->select('id')->get();
+                $id_i = Direcao_ida::where("id", "=", $this->getLast_Direcao_ida())->select('id')->get();
 
                 foreach($id_i as $key)
                 {
@@ -308,6 +308,15 @@ class Solicitacao extends Model
     public function getLast_Solicitation()
     {
         $res = Solicitacao::orderBy('id', 'desc')->first();
+        foreach($res as $key)
+        {
+            return $id = $key->id;
+        }
+    }
+
+    public function getLast_Direcao_ida()
+    {
+        $res = Direcao_ida::orderBy('id', 'desc')->first();
         foreach($res as $key)
         {
             return $id = $key->id;

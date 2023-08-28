@@ -40,6 +40,9 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+// Public Routes
+Route::post('/login', [AuthController::class, 'login']);
+
 // ROTAS PRIVADAS
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/new_solicitation', [NewSolicitations::class, 'newSolicitation'])->name('hc.api.newSolicitation');
