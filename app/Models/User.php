@@ -47,9 +47,14 @@ class User extends Authenticatable
 
     public function login_model($request)
     {
+        // $headers = [
+        //     'email' => $request->header()['php-auth-user'][0],
+        //     'password' => $request->header()['php-auth-pw'][0],
+        // ];
+
         $headers = [
-            'email' => $request->header()['php-auth-user'][0],
-            'password' => $request->header()['php-auth-pw'][0],
+            'email' => $request->user,
+            'password' => $request->pass,
         ];
 
         if (!Auth::attempt($headers)) {
