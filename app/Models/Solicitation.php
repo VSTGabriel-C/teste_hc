@@ -112,7 +112,7 @@ class Solicitation extends Model
             return json_encode($msg, JSON_UNESCAPED_UNICODE);
         }
         $ee = DB::transaction(function () use ($request, $msg) {
-            $teste = DB::beginTransaction();
+            DB::beginTransaction();
             $nome_paciente = Crypt::encryptString($request->n_paciente);
 
             //METODOS QUE RECUPERAM ID
