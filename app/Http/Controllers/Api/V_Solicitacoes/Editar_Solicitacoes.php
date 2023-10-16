@@ -4,16 +4,17 @@ namespace App\Http\Controllers\Api\V_Solicitacoes;
 
 use App\Http\Controllers\Controller;
 use App\Models\Ch_destino;
-use App\Models\Direcao_ida;
+use App\Models\DirGoing;
 use App\Models\Direcao_volta;
 use App\Models\Motorista;
 use App\Models\Paciente;
-use App\Models\Solicitacao;
+use App\Models\Solicitation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Contracts\Encryption\DecryptException;
 use App\Models\Sql;
+use App\Models\Utensils;
 use App\Models\Veiculo;
 
 class Editar_Solicitacoes extends Controller
@@ -94,36 +95,46 @@ class Editar_Solicitacoes extends Controller
             Paciente::where('id', '=', $ids['id_paciente'])->update(['nome_paciente' => Crypt::encryptString($nome_paciente)]);
 
             //UPDATE SOLICITAÇÃO
-            Solicitacao::where('id', '=', $id)->update(['ida' => $ida,'retorno' => $retorno,'cancelamento' => $cancelamento,
-            'data' => $data_sol,'hora' => $hora_sol,'fk_solicitante' => $id_solicitante->id,
-            'fk_motorista' => $id_motorista->id, 'fk_veiculo' => $id_veiculo->id,
-            'destino'=> $dest_sol, 'portaria' => $port_sol, 'n_ficha' => $n_ficha_sol,
-            ' end_loc_ident' => $end_loc_ident, 'radio' => $radio,
-            'hc' => $hc, 'incor' => $incor, 'contato plantao' =>  $contato, 'atendida_por' => $nome_func]);
+            Solicitation::where('id', '=', $id)->update(['going' => $ida,
+            'return' => $retorno,
+            'cancellation' => $cancelamento,
+            'date' => $data_sol,
+            'hour' => $hora_sol,
+            'fk_applicant' => $id_solicitante->id,
+            'fk_driver' => $id_motorista->id,
+            'fk_vehicle' => $id_veiculo->id,
+            'destiny'=> $dest_sol,
+            'ordinance' => $port_sol,
+            'n_file' => $n_ficha_sol,
+            'end_loc_ident' => $end_loc_ident,
+            'radio' => $radio,
+            'hc' => $hc,
+            'incor' => $incor,
+            'contact_plant' =>  $contato,
+            'attendance_by' => $nome_func]);
 
-
-            Utencil::where('id', $ids['utencil_id'])->update([
-                'oxigenio' => $oxi,
+            Utensils::where('id', $ids['utencil_id'])->update([
+                'oxygen' => $oxi,
                 'obeso' => $obe,
                 'isolete' => $iso,
-                'maca' => $mac,
-                'isolamento' => $isolamento,
-                'obito' => $obito,
-                'd_isolamento' => $iso_motivo,
+                'stretcher' => $mac,
+                'isolation' => $isolamento,
+                'death' => $obito,
+                'd_isolation' => $iso_motivo,
                 'uti' => $uti,
             ]);
 
 
             // NAO TEM O MODELO DE UTENCILHO
 
-            Utencil::where('id', $ids['utencil_id'])->update([
-                'oxigenio' => $oxi,
-                'obeso' => $obe,
+            Utensils::where('id', $ids['utencil_id'])->update([
+                'oxygen' => $oxi,
+                'obese' => $obe,
                 'isolete' => $iso,
-                'maca' => $mac,
-                'isolamento' => $isolamento,
-                'obito' => $obito,
-                'd_isolamento' => $iso_motivo,
+                'stretcher' => $mac,
+                'isolation' => $isolamento,
+                'death' => $obito,
+                'd_isolation' => $iso_motivo,
                 'uti' => $uti,
             ]);
 
@@ -146,15 +157,15 @@ class Editar_Solicitacoes extends Controller
 
             if($nn['ida_id'] == 0 || $nn['ida_id'] == "")
             {
-                Direcao_ida::create([
-                    'horario' => $sol_saida,
+                DirGoing::create([
+                    'hour' => $sol_saida,
                     'km' => $sol_km,
-                    'fk_solicitacao' => $id,
+                    'fk_solicitation' => $id,
                 ]);
             }else if($nn['ida_id'] != 0 || $nn['ida_id'] != "")
             {
-                Direcao_ida::where('fk_solicitacao', $id)->update([
-                    'horario' => $sol_saida,
+                DirGoing::where('fk_solicitation', $id)->update([
+                    'hour' => $sol_saida,
                     'km' => $sol_km,
                 ]);
             }

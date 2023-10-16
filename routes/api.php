@@ -43,15 +43,18 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 // Public Routes
 Route::post('/login', [AuthController::class, 'login']);
 
+Route::post('/new_solicitation', [NewSolicitations::class, 'newSolicitation'])->name('hc.api.newSolicitation');
+
 // ROTAS PRIVADAS
 Route::group(['middleware' => ['auth:sanctum']], function () {
-    Route::post('/new_solicitation', [NewSolicitations::class, 'newSolicitation'])->name('hc.api.newSolicitation');
-    Route::post('/nova_sol', [NewSolicitations::class, 'novaSol'])->name('hc.api.newSolicitation');
-    Route::get('/get_solicitations_filter', [Visualizar_Solicitacoes::class, 'searchSolicitations'])->name('hc.api.get_solicitations_filter');
-    Route::get('/get_solicitations_filterDIA', [Visualizar_Solicitacoes::class, 'searchSolicitationsDIA'])->name('hc.api.get_solicitationsDIA_filter');
-    Route::get('/get_solicitations_filter_by_id/{id}', [Visualizar_Solicitacoes::class, 'searchSolicitationById'])->name('hc.api.get_solicitations_byId');
-    Route::post('/get_All_by_id/{id}', [Editar_Solicitacoes::class, 'editar_solicitacoes'])->name('hc.api.get_solicitations_byId');
 });
+
+//Route::post('/new_solicitation', [NewSolicitations::class, 'newSolicitation'])->name('hc.api.newSolicitation');
+Route::post('/nova_sol', [NewSolicitations::class, 'novaSol'])->name('hc.api.newSolicitation');
+Route::get('/get_solicitations_filter', [Visualizar_Solicitacoes::class, 'searchSolicitations'])->name('hc.api.get_solicitations_filter');
+Route::get('/get_solicitations_filterDIA', [Visualizar_Solicitacoes::class, 'searchSolicitationsDIA'])->name('hc.api.get_solicitationsDIA_filter');
+Route::get('/get_solicitations_filter_by_id/{id}', [Visualizar_Solicitacoes::class, 'searchSolicitationById'])->name('hc.api.get_solicitations_byId');
+Route::post('/get_All_by_id/{id}', [Editar_Solicitacoes::class, 'editar_solicitacoes'])->name('hc.api.get_solicitations_byId');
 
 //ROTAS SOLICITAÇÕES
 Route::get('/teste', [Teste::class, 'teste'])->name('hc.api.d');

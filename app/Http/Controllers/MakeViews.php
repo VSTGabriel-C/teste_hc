@@ -18,10 +18,9 @@ class MakeViews extends Controller
 
     public function makeViewDashboard()
     {
-        if(Auth::check() === true)
-        {
-            Auth::user();
-
+        //if(Auth::check() === true)
+        //{
+            //Auth::user();
             $escala = new Escala();
 
             $ativa = $escala::whereDate("data_inicio", date("Y-m-d"))
@@ -40,14 +39,11 @@ class MakeViews extends Controller
                 "escala_id" => null
             ]);
 
-        }else
+        //}else
         {
             return view('Login.Login_HC');
         }
     }
-
-
-
 
     public function makeView_Infos()
     {

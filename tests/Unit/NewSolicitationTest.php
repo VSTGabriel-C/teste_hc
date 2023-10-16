@@ -2,12 +2,13 @@
 
 namespace Tests\Unit;
 
+use App\Models\Solicitation;
 use PHPUnit\Framework\TestCase;
 
-class ExampleTest extends TestCase
+class NewSolicitationTest extends TestCase
 {
     /**
-     * A basic test example.
+     * A basic unit test example.
      *
      * @return void
      */
