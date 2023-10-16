@@ -101,18 +101,16 @@ class Solicitation extends Model
     public function newSolicitation(Request $request)
     {
         $msg = array();
+
         //DADOS DA SOLICITAÇÂO
         $ficha = Solicitation::where('n_file', $request->n_ficha_sol)->first();
-        if($ficha)
-        {
+        if ($ficha) {
             $msg = array(
                 "status" => 0,
                 "msg" => "Não foi possivel cadastrar uma nova solicitação N° da ficha já existe !"
             );
             return json_encode($msg, JSON_UNESCAPED_UNICODE);
         }
-
-        ///////////////////////////////////////////////////////////
         $ee = DB::transaction(function () use ($request, $msg) {
             $teste = DB::beginTransaction();
             $nome_paciente = Crypt::encryptString($request->n_paciente);
@@ -149,7 +147,6 @@ class Solicitation extends Model
                 $up_going = Solicitation::where('id', '=', $last_solicitation)->update(['going' => 'NOK', 'return' => 'NOK']);
                 array_push($this->data_update, $up_going ? true : false);
             }
-
             $up_going = Solicitation::where('id', '=', $last_solicitation)->update(['going' => 'OK', 'return' => 'NOK', 'cancellation' => 'NOK']);
             array_push($this->data_update, $up_going ? true : false);
 
@@ -158,27 +155,22 @@ class Solicitation extends Model
             array_push($this->data_update, $up_incor ? true : false);
 
             //COLOCANDO CHAVE ESTRANGEIRA DO SOLICITANTE
-
             $up_fk_applicant = Solicitation::where('id', '=', $last_solicitation)->update(['fk_applicant' => $request->sol_id]);
             array_push($this->data_update, $up_fk_applicant ? true : false);
 
             //COLOCANDO CHAVE ESTRANGEIRA DO VEICULO
-
             $up_fk_vehicle = Solicitation::where('id', '=', $last_solicitation)->update(['fk_vehicle' => $carro_id]);
             array_push($this->data_update, $up_fk_vehicle ? true : false);
 
             //COLOCANDO CHAVE ESTRANGEIRA DO MOTORISTA
-
             $up_fk_driver = Solicitation::where('id', '=', $last_solicitation)->update(['fk_driver' => $motorista_id]);
             array_push($this->data_update, $up_fk_driver ? true : false);
 
             // COLOCANDO PACIENTE
-
             $up_fk_patient = Solicitation::where('id', '=', $last_solicitation)->update(['fk_patient' => $last_patient]);
             array_push($this->data_update, $up_fk_patient ? true : false);
+
             //COLOCANDO UTENSILIOS
-
-
             $newUtensils = Utensils::create([
                 'oxygen' => $request->oxi,
                 'obese' => $request->obe,
@@ -190,7 +182,6 @@ class Solicitation extends Model
                 'd_isolation' => $request->amb_iso_qual,
             ]);
             array_push($this->data_create, $newUtensils ? true : false);
-
             $last_Utensil = $newUtensils->id;
 
             $newDirGoing = DirGoing::create([
@@ -199,52 +190,42 @@ class Solicitation extends Model
                 'fk_solicitation' => $last_solicitation,
             ]);
             array_push($this->data_create, $newDirGoing ? true : false);
-
             $last_DirGoing = $newDirGoing->id;
 
             $u_distancia_perc = DistancePerc::create([
                 'fk_dir_going' => $last_DirGoing
             ]);
-
             array_push($this->data_create, $u_distancia_perc ? true : false);
-
             $last_DistancePerc = $u_distancia_perc->id;
 
-            $up_fk_dist_perc = Solicitation::where('id', $last_solicitation)->update(['fk_dist_perc'=> $last_DistancePerc]);
-
+            //COLOCANDO CHAVE ESTRANGEIRA DA DISTANCIA PERCORRIDA
+            $up_fk_dist_perc = Solicitation::where('id', $last_solicitation)->update(['fk_dist_perc' => $last_DistancePerc]);
             array_push($this->data_update, $up_fk_dist_perc ? true : false);
 
-
-            /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-            $up_fk_utensil = Solicitation::where('id', $last_solicitation)->update(['fk_utensil'=> $last_Utensil]);
+            //COLOCANDO CHAVE ESTRANGEIRA DOS UTENCILIOS
+            $up_fk_utensil = Solicitation::where('id', $last_solicitation)->update(['fk_utensil' => $last_Utensil]);
             array_push($this->data_update, $up_fk_utensil ? true : false);
 
             //ALTERANDO O STATUS DO MOTORISTA
-
-            $up_driver_status = Driver::where('id', $motorista_id)->update(['status'=> 2]);
+            $up_driver_status = Driver::where('id', $motorista_id)->update(['status' => 2]);
             array_push($this->data_update, $up_driver_status ? true : false);
 
             //ALTERANDO O STATUS DO VEICULO
-
-            $up_vehicle_status = Vehicle::where('id', $carro_id)->update(['status'=> 2]);
+            $up_vehicle_status = Vehicle::where('id', $carro_id)->update(['status' => 2]);
             array_push($this->data_update, $up_vehicle_status ? true : false);
 
             $query2 = 1;
-
-            //$verf = Ramal::where("fk_applicant", $request->sol_id)->get();
-
-            $query1 = Applicant::where('id', $request->sol_id)  // verifica se existe alguem com este ramal
-            ->where('ramal', $request->ramal_sol)
-            ->get();
+            $query1 = Applicant::where('id', $request->sol_id)              // verifica se existe alguem com este ramal
+                ->where('ramal', $request->ramal_sol)
+                ->get();
 
             if (empty($query1)) {                                           // se n tiver, ele vai verificar
                 $query2 = Ramal::where('fk_applicant', $request->sol_id)    // se existe este ramal com este solicitante
-                ->where('n_ramal', $request->ramal_sol)
-                ->get();
+                    ->where('n_ramal', $request->ramal_sol)
+                    ->get();
             }
 
-            if (empty($query2)) {                                     // se n existir, ele cria um Ramal para o solicitante
+            if (empty($query2)) {                                           // se n existir, ele cria um Ramal para o solicitante
                 $newRamal = Ramal::create([
                     "n_ramal" => $request->ramal_sol,
                     "fk_applicant" => $request->sol_id
@@ -253,10 +234,11 @@ class Solicitation extends Model
                 array_push($this->data_create, $newRamal ? true : false);
             }
 
-            $id_fk = Ramal::where("n_ramal", $request->ramal_sol)->select('id')->first();  // pegar o q existe, ou o criado
+            $id_fk = Ramal::where("n_ramal", $request->ramal_sol)->select('id')->first();
 
+            //COLOCANDO CHAVE ESTRANGEIRA DO RAMAL
             if (!empty($id_fk)) {
-                $up_kf_ramal = Solicitation::where('id', $last_solicitation)->update(['fk_ramal'=> $id_fk->id]);
+                $up_kf_ramal = Solicitation::where('id', $last_solicitation)->update(['fk_ramal' => $id_fk->id]);
                 array_push($this->data_update, $up_kf_ramal ? true : false);
             }
 
@@ -311,22 +293,4 @@ class Solicitation extends Model
         $res = Driver::where('name', $nome)->select('id')->first();
         return $res->id;
     }
-
-    // public function getUtencilID()
-    // {
-    //     $res = Utensils::orderBy('id', 'desc')->first();
-    //     return $res->id;
-    // }
-
-    // public function getLast_Solicitation()
-    // {
-    //     $res = Solicitation::orderBy('id', 'desc')->first();
-    //     return $res->id;
-    // }
-
-    // public function getLast_Direcao_ida()
-    // {
-    //     $res = DirGoing::orderBy('id', 'desc')->first();
-    //     return $res->id;
-    // }
 }
