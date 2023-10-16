@@ -113,6 +113,7 @@ class Solicitation extends Model
         }
         $ee = DB::transaction(function () use ($request, $msg) {
             DB::beginTransaction();
+
             $nome_paciente = Crypt::encryptString($request->n_paciente);
 
             //METODOS QUE RECUPERAM ID
@@ -124,6 +125,7 @@ class Solicitation extends Model
                 'patient_name' => $nome_paciente
             ]);
             array_push($this->data_create, $i_paciente ? true : false);
+
             $last_patient = $i_paciente->id;
 
             //CRIANDO NOVA SOLICITACAO
@@ -140,6 +142,7 @@ class Solicitation extends Model
                 "fk_scale" => $request->id_escala
             ]);
             array_push($this->data_create, $newSolicitation ? true : false);
+
             $last_solicitation = $newSolicitation->id;
 
             //COLOCANDO IDA OU VOLTA
@@ -147,11 +150,19 @@ class Solicitation extends Model
                 $up_going = Solicitation::where('id', '=', $last_solicitation)->update(['going' => 'NOK', 'return' => 'NOK']);
                 array_push($this->data_update, $up_going ? true : false);
             }
-            $up_going = Solicitation::where('id', '=', $last_solicitation)->update(['going' => 'OK', 'return' => 'NOK', 'cancellation' => 'NOK']);
+            $up_going = Solicitation::where('id', '=', $last_solicitation)->update([
+                'going' => 'OK',
+                'return' => 'NOK',
+                'cancellation' => 'NOK'
+            ]);
             array_push($this->data_update, $up_going ? true : false);
 
             //INSERINDO HC INCOR e RADIO
-            $up_incor = Solicitation::where('id', '=', $last_solicitation)->update(['incor' => $request->mot_INCOR, 'radio' => $request->mot_radio, 'fk_user' => $request->idUser]);
+            $up_incor = Solicitation::where('id', '=', $last_solicitation)->update([
+                'incor' => $request->mot_INCOR,
+                'radio' => $request->mot_radio,
+                'fk_user' => $request->idUser
+            ]);
             array_push($this->data_update, $up_incor ? true : false);
 
             //COLOCANDO CHAVE ESTRANGEIRA DO SOLICITANTE
@@ -182,6 +193,7 @@ class Solicitation extends Model
                 'd_isolation' => $request->amb_iso_qual,
             ]);
             array_push($this->data_create, $newUtensils ? true : false);
+
             $last_Utensil = $newUtensils->id;
 
             $newDirGoing = DirGoing::create([
@@ -190,12 +202,14 @@ class Solicitation extends Model
                 'fk_solicitation' => $last_solicitation,
             ]);
             array_push($this->data_create, $newDirGoing ? true : false);
+
             $last_DirGoing = $newDirGoing->id;
 
             $u_distancia_perc = DistancePerc::create([
                 'fk_dir_going' => $last_DirGoing
             ]);
             array_push($this->data_create, $u_distancia_perc ? true : false);
+
             $last_DistancePerc = $u_distancia_perc->id;
 
             //COLOCANDO CHAVE ESTRANGEIRA DA DISTANCIA PERCORRIDA
@@ -215,6 +229,7 @@ class Solicitation extends Model
             array_push($this->data_update, $up_vehicle_status ? true : false);
 
             $query2 = 1;
+
             $query1 = Applicant::where('id', $request->sol_id)              // verifica se existe alguem com este ramal
                 ->where('ramal', $request->ramal_sol)
                 ->get();
@@ -230,7 +245,6 @@ class Solicitation extends Model
                     "n_ramal" => $request->ramal_sol,
                     "fk_applicant" => $request->sol_id
                 ]);
-
                 array_push($this->data_create, $newRamal ? true : false);
             }
 
@@ -243,7 +257,6 @@ class Solicitation extends Model
             }
 
             $check = true;
-
             foreach ($this->data_create as $aux) {
                 if ($aux == false) {
                     $check = false;
