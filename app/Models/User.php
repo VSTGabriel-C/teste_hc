@@ -10,6 +10,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
@@ -21,7 +23,7 @@ class User extends Authenticatable
      *
      * @var array
      */
-    protected $fillable = ['email', 'password', 'date', 'name', 'camFoto', 'admin', 'active'];
+    protected $fillable = ['email', 'password', 'date', 'name', 'camFoto', 'admin', 'active', "camFoto"];
 
 
     /**
@@ -50,19 +52,10 @@ class User extends Authenticatable
 
     public function login_model($request)
     {
-        // $headers = [
-        //     'email' => $request->header()['php-auth-user'][0],
-        //     'password' => $request->header()['php-auth-pw'][0],
-        // ];
-
         $headers = [
-            'email' => $request->user,
-            'password' => $request->pass,
+            'email' => $request->header()['php-auth-user'][0],
+            'password' => $request->header()['php-auth-pw'][0],
         ];
-
-        if (!Auth::attempt($headers)) {
-            return $this->error('', 'Credential do not match', 401);
-        }
 
         $user = User::where('email', $headers['email'])->first();
         $token = $user->createToken('API Token of' . $user->email)->plainTextToken;
@@ -71,24 +64,6 @@ class User extends Authenticatable
             'user' => $user,
             'token' => $token
         ], 'login success');
-    }
-
-    public function create_model($request)
-    {
-        $request->validated($request->all());
-
-        $user = User::create([
-            'name' => $request->first_name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
-
-        $token = $user->createToken('API Token of' . $user->email)->plainTextToken;
-
-        return $this->succes([
-            'user' => $user,
-            'token' => $token
-        ], 'User created successfully');
     }
 
     public function update_model(Request $request)
@@ -115,5 +90,125 @@ class User extends Authenticatable
         $user->delete();
 
         return $this->succes('', 'User deleted successfully');
+    }
+
+    public function newUser(Request $request)
+    {
+
+        $email = $request->u_email;
+        $nome = $request->u_nome;
+        $senha = $request->u_senha;
+        $confirm = $request->s_confirm;
+        $tipo = $request->tipo_user;
+        $newTipo = 0;
+        $data_atual = date("Y-m-d");
+        $newPic = $this->storeIm($request);
+
+        $msg = array();
+
+        $if = User::where("email", $email)->first();
+
+        if($if)
+        {
+            $msg = array(
+                'status' => 1,
+                'msg' => "E-mail informado já está cadastrado"
+            );
+            return json_encode($msg, JSON_UNESCAPED_UNICODE);
+            //return redirect()->route('hc_add_new_admin', $msg);
+        }
+        else
+        {
+            if($senha == $confirm)
+            {
+                if($tipo == "Admin")
+                {
+                    $newTipo = 1;
+                }
+                else if($tipo == "Normal")
+                {
+                    $newTipo = 2;
+                }
+
+                User::create([
+                    "email" => $email,
+                    'password' => Hash::make($request->password),
+                    "date" => $data_atual,
+                    "name" => $nome,
+                    "admin" => $newTipo,
+                    "active" => 1,
+                    "camFoto" => $newPic
+                ]);
+
+                $msg = array(
+                    'status' => 0,
+                    'msg' => "Usuário cadastrado com sucesso!"
+                );
+
+                return json_encode($msg, JSON_UNESCAPED_UNICODE);
+                //return redirect()->route('hc_add_new_admin', $msg);
+
+            }
+            else
+            {
+                $msg = array(
+                    'status' => 1,
+                    'msg' => "Senhas não conferem!"
+                );
+                return redirect()->route('hc_add_new_admin', $msg);
+            }
+        }
+    }
+
+    public function storeIm ($request)
+    {
+        $nameFile = '';
+
+        if ($request->hasFile('image') && $request->file('image')->isValid()) {
+
+            $name = uniqid(date('dmY'));
+
+            $extension = $request->all()['image']->extension();
+
+            $path="public/images/fotos";
+
+            if($extension != 'jpeg' && $extension != 'png' && $extension != 'svg' && $extension != "jpg")
+            {
+             return redirect()
+             ->back()
+             ->with('error', 'Falha ao fazer upload, formato do arquivo está errado.')
+             ->withInput();
+            }
+            $nameFile = "{$name}.{$extension}";
+
+            $upload = $request->file('image')->storeAS($path, $nameFile);
+            if ( !$upload )
+                return redirect()
+                            ->back()
+                            ->with('error', 'Falha ao fazer upload')
+                            ->withInput();
+        }
+        return $nameFile;
+    }
+
+    public function allUserss()
+    {
+        $res = User::get();
+        return json_encode($res);
+    }
+
+    public function allUserssL()
+    {
+        $res = User::orderBy("id", "asc")->get();
+        $arr = ['data' => $res];
+        $sm = $arr;
+        return json_encode($sm, JSON_UNESCAPED_UNICODE);
+    }
+
+    public function get_Users_By_Id($id)
+    {
+        $res = User::where("id", $id)->select("name","email")->get();
+
+        return json_encode($res);
     }
 }

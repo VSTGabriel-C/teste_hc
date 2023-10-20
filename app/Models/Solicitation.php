@@ -98,6 +98,15 @@ class Solicitation extends Model
         return $this->belongsTo(Ramal::class);
     }
 
+    public function getAllSolicitations()
+    {
+
+        $response = Solicitation::orderBy("id", "asc")->get();
+        $arr = ['data' => $response];
+        $sm = $arr;
+        return json_encode($sm, JSON_UNESCAPED_UNICODE);
+    }
+
     public function newSolicitation(Request $request)
     {
         $msg = array();
@@ -139,8 +148,11 @@ class Solicitation extends Model
                 "contact_plant" => $request->contato,
                 "attendance_by" => $request->nome_func,
                 "observation" => $request->observacao,
+                "hc" => $request->mot_HC,
+                "status_sol" => 1,
                 "fk_scale" => $request->id_escala
             ]);
+
             array_push($this->data_create, $newSolicitation ? true : false);
 
             $last_solicitation = $newSolicitation->id;
@@ -232,15 +244,15 @@ class Solicitation extends Model
 
             $query1 = Applicant::where('id', $request->sol_id)              // verifica se existe alguem com este ramal
                 ->where('ramal', $request->ramal_sol)
-                ->get();
+                ->first();
 
-            if (empty($query1)) {                                           // se n tiver, ele vai verificar
+            if (empty($query1)) {                             // se n tiver, ele vai verificar
                 $query2 = Ramal::where('fk_applicant', $request->sol_id)    // se existe este ramal com este solicitante
                     ->where('n_ramal', $request->ramal_sol)
-                    ->get();
+                    ->first();
             }
 
-            if (empty($query2)) {                                           // se n existir, ele cria um Ramal para o solicitante
+            if (empty($query2)) {                                  // se n existir, ele cria um Ramal para o solicitante
                 $newRamal = Ramal::create([
                     "n_ramal" => $request->ramal_sol,
                     "fk_applicant" => $request->sol_id

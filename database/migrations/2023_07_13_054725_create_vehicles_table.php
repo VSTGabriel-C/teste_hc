@@ -13,7 +13,7 @@ class CreateVehiclesTable extends Migration
             $table->string('type');
             $table->string('pref');
             $table->string('plate');
-            $table->string('brend');
+            $table->string('brand');
             $table->string('status');
             $table->string('h_d')->nullable();
             $table->string('motive')->nullable();

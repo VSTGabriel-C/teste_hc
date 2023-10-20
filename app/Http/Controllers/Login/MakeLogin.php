@@ -26,10 +26,7 @@ class MakeLogin extends Controller
         {
             return redirect()->route('hc_login')->with('msg', 'Impossivel logar no sistema com login e senha fornecidas');
         }
-        // else if(is_null($check))
-        // {
-    	//     return redirect()->route('hc_login')->with('msg', 'Marque o campo não sou um robo para verificação');
-        // }
+
         else if(empty($email))
         {
             return redirect()->route('hc_login')->with('msg', 'Impossivel logar no sistema email não fornecido!');
@@ -42,7 +39,6 @@ class MakeLogin extends Controller
             return redirect()->route('hc_login')->with('msg', 'Impossivel logar no sistema email fornecido não foi encontrado!');
         }
 	    $decripty = Crypt::decryptString($user->password);
-        echo('1234');
         if($email == $user -> email && $senha == $decripty )
         {
             $admin  = $user->admin;

@@ -5,6 +5,7 @@ namespace Tests\Unit;
 use Tests\TestCase;
 use App\Models\Utensils;
 use App\Models\Solicitation;
+use Illuminate\Support\Facades\DB;
 
 class UtensilsTest extends TestCase
 {
@@ -27,7 +28,7 @@ class UtensilsTest extends TestCase
      */
     public function create_and_retrieve_utensils()
     {
-
+        DB::beginTransaction();
         $utensil = $this->create_utensils();
 
         $utensil->save();

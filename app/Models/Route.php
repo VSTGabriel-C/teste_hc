@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Route extends Model
 {
-    protected $fillable = ['destination', 'controller_plant', 'url_route', 'driver_id', 'vehicle_id'];
+    protected $fillable = ['destination', 'controller_plant', 'url_route', 'fk_driver', 'fk_vehicle'];
 
     public function driver()
     {

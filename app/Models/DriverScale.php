@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class DriverScale extends Model
 {
-    protected $fillable = ['scale_id', 'driver_id', 'hour_mot'];
+    protected $fillable = ['fk_scale', 'fk_driver', 'hour_mot'];
 
     public function scale()
     {

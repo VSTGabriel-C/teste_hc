@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class DirReturn extends Model
 {
-    protected $fillable = ['hour', 'km', 'warning_return', 'solicitation_id'];
+    protected $fillable = ['hour', 'km', 'warning_return', 'fk_solicitation'];
 
     public function solicitation()
     {

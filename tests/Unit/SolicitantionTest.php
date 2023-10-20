@@ -18,8 +18,6 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class SolicitationTest extends TestCase
 {
-    use RefreshDatabase;
-
     /**
      * @test
      */
@@ -29,10 +27,30 @@ class SolicitationTest extends TestCase
         $fillable = $solicitation->getFillable();
 
         $expectedFillable = [
-            'date', 'hour', 'destiny', 'ordinance', 'end_loc_ident', 'going', 'return',
-            'cancellation', 'n_file', 'hc', 'incor', 'radio', 'contact_plant',
-            'attendance_by', 'observation', 'fk_user', 'fk_scale', 'fk_applicant',
-            'fk_utensil', 'fk_vehicle', 'fk_driver', 'fk_dist_perc', 'fk_patient'
+            'date',
+            'hour',
+            'destiny',
+            'ordinance',
+            'end_loc_ident',
+            'going',
+            'return',
+            'cancellation',
+            'n_file',
+            'hc',
+            'incor',
+            'radio',
+            'contact_plant',
+            'attendance_by',
+            'observation',
+            'status_sol',
+            'fk_user',
+            'fk_ramal',
+            'fk_applicant',
+            'fk_utensil',
+            'fk_vehicle',
+            'fk_driver',
+            'fk_dist_perc',
+            'fk_patient'
         ];
 
         $this->assertEquals($expectedFillable, $fillable);

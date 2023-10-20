@@ -15,6 +15,7 @@ class EditVeiculo extends Controller
         $tipo = $request->tipo;
         $placa = $request->placa;
         $marca = $request->marca;
+        $response = null;
 
         $st = DB::update("UPDATE `veiculo`
         SET `tipo` = :tipo,
@@ -45,37 +46,4 @@ class EditVeiculo extends Controller
 
     }
 
-    public function getVeiculoById(Request $request, $id)
-    {
-        $response = DB::select('SELECT
-        v.id,
-        v.marca,
-        v.placa,
-        v.pref,
-        v.tipo
-        FROM veiculo
-        AS v
-        WHERE id = :id', [':id' => $id]);
-
-        return json_encode($response);
-    }
-
-    public function getVeiculoDisponivel()
-    {
-        $var = DB::select("SELECT
-        *
-        FROM veiculo v
-        WHERE v.status = 1");
-
-        return json_encode($var);
-    }
-    public function getVeiculoHabilitado()
-    {
-        $var = DB::select("SELECT
-        *
-        FROM veiculo v
-        WHERE v.h_d = 1");
-
-        return json_encode($var);
-    }
 }

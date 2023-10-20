@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Usuarios;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Crypt;
@@ -11,36 +12,27 @@ class EditarUser extends Controller
 {
   public function allUserss()
     {
+        $user = (new User)->allUserss();
 
-        $res = DB::select("SELECT
-        * 
-        FROM users u");
-        return json_encode($res);
+        return $user;
+
     }
 
-    public function allUserssL(Request $request)
+    public function allUserssL()
     {
-        $req = $request->all();
-        $arr = [];
-     
-        $res = DB::select('select * from users u order by id asc');
-        $arr[] = ['data' => $res];
-        $sm = $arr;
-        return json_encode($sm, JSON_UNESCAPED_UNICODE);
+
+        $user = (new User)->allUserssL();
+
+        return $user;
+
     }
 
     public function get_Users_By_Id($id)
     {
-        $res = DB::select("SELECT
-        u.name,
-        u.email
-        FROM users u
-        WHERE u.id = ?", 
-        [
-            $id
-        ]);
+        $user = (new User)->get_Users_By_Id($id);
 
-        return json_encode($res);
+        return $user;
+
     }
 
 
@@ -64,7 +56,7 @@ class EditarUser extends Controller
                 $picEdit,
                 $ids
             ]);
-        
+
         if($result)
         {
             $msg = array(
@@ -72,7 +64,7 @@ class EditarUser extends Controller
                 "msg" => "Foto Editada com sucesso. Por favor relogue no sistema!"
             );
 
-            return redirect()->route('hc_edit_new_admin', $msg); 
+            return redirect()->route('hc_edit_new_admin', $msg);
         }else
         {
             $msg = array(
@@ -81,7 +73,7 @@ class EditarUser extends Controller
             );
 
             return redirect()->route('hc_edit_new_admin', $msg);
-        } 
+        }
     }
 
         if(is_null($senha) && is_null($senha_C))
@@ -103,7 +95,7 @@ class EditarUser extends Controller
                     "msg" => "Usuario editado com sucesso!"
                 );
 
-                return redirect()->route('hc_edit_new_admin', $msg); 
+                return redirect()->route('hc_edit_new_admin', $msg);
             }else
             {
                 $msg = array(
@@ -111,8 +103,8 @@ class EditarUser extends Controller
                     "msg" => "Não foi possivel editar o usuario pois nada foi alterado."
                 );
 
-                return redirect()->route('hc_edit_new_admin', $msg); 
-            }    
+                return redirect()->route('hc_edit_new_admin', $msg);
+            }
         }
 
             if($senha == $senha_C)
@@ -135,7 +127,7 @@ class EditarUser extends Controller
                         "msg" => "Usuario editado com sucesso!"
                     );
 
-                    return redirect()->route('hc_edit_new_admin', $msg); 
+                    return redirect()->route('hc_edit_new_admin', $msg);
                 }else
                 {
                     $msg = array(
@@ -143,15 +135,15 @@ class EditarUser extends Controller
                         "msg" => "Não foi possivel editar o usuario (Senhas não conferem) !"
                     );
 
-                    return redirect()->route('hc_edit_new_admin', $msg); 
-                }    
+                    return redirect()->route('hc_edit_new_admin', $msg);
+                }
             }else
             {
                 $msg = array(
                     "status" => 0,
                     "msg" => "Não foi possivel alterar o usuario (Senhas não conferem) !"
                 );
-                return redirect()->route('hc_edit_new_admin', $msg); 
+                return redirect()->route('hc_edit_new_admin', $msg);
             }
     }
     public function storeImE ($request, $id)
@@ -160,7 +152,7 @@ class EditarUser extends Controller
         $res = DB::select("SELECT
         u.camFoto
         FROM users u
-        WHERE u.id = ?", 
+        WHERE u.id = ?",
         [
             $id
         ]);
@@ -178,7 +170,7 @@ class EditarUser extends Controller
             $extension = $request->all()['imageE']->extension();
 
             $path="public/images/fotos";
-            
+
             if($extension != 'jpeg' && $extension != 'png' && $extension != 'svg' && $extension != "jpg")
             {
              return redirect()

@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Motorista\NewMotorista;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Api\Motorista\ExcludeMotorista;
 use App\Http\Controllers\Api\Motorista\EditMotorista;
 use App\Http\Controllers\Api\Veiculo\NewVeiculo;
@@ -51,6 +52,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
 //Route::post('/new_solicitation', [NewSolicitations::class, 'newSolicitation'])->name('hc.api.newSolicitation');
 Route::post('/nova_sol', [NewSolicitations::class, 'novaSol'])->name('hc.api.newSolicitation');
+Route::get('/solicitations_all', [Visualizar_Solicitacoes::class, 'getAllSolicitations']);
 Route::get('/get_solicitations_filter', [Visualizar_Solicitacoes::class, 'searchSolicitations'])->name('hc.api.get_solicitations_filter');
 Route::get('/get_solicitations_filterDIA', [Visualizar_Solicitacoes::class, 'searchSolicitationsDIA'])->name('hc.api.get_solicitationsDIA_filter');
 Route::get('/get_solicitations_filter_by_id/{id}', [Visualizar_Solicitacoes::class, 'searchSolicitationById'])->name('hc.api.get_solicitations_byId');
@@ -79,9 +81,9 @@ Route::post('/motorista_edit', [EditMotorista::class, 'editMotorista'])->name('h
 //ROTAS VEICULO
 //GET
 Route::get('/veiculo_all', [Veiculo_Get_Data::class, 'getVeiculos'])->name('hc.api.getVeiculo');
-Route::get('/get_veiculo_by_id/{id}', [EditVeiculo::class, 'getVeiculoById'])->name('hc.api.getVeiculoById');
-Route::get('/get_veiculo_disponivel', [EditVeiculo::class, 'getVeiculoDisponivel'])->name('hc.api.getVeiculoDisponivel');
-Route::get('/get_veiculo_habilitado', [EditVeiculo::class, 'getVeiculoHabilitado'])->name('hc.api.getVeiculoHabilitado');
+Route::get('/get_veiculo_by_id/{id}', [Veiculo_Get_Data::class, 'getVeiculoById'])->name('hc.api.getVeiculoById');
+Route::get('/get_veiculo_disponivel', [Veiculo_Get_Data::class, 'getVeiculoDisponivel'])->name('hc.api.getVeiculoDisponivel');
+Route::get('/get_veiculo_habilitado', [Veiculo_Get_Data::class, 'getVeiculoHabilitado'])->name('hc.api.getVeiculoHabilitado');
 //POST
 Route::post('/add_new_veiculo', [NewVeiculo::class, 'newVeiculo'])->name('hc.api.add_new_veiculo');
 Route::post('/veiculo_delete', [ExcludeVeiculo::class, 'excludeVeiculo'])->name('hc.api.veiculo_delete');

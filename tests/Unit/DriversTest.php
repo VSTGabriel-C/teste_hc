@@ -6,6 +6,7 @@ use Tests\TestCase;
 use App\Models\Driver;
 use App\Models\Solicitation;
 use App\Models\DriverScale;
+use Illuminate\Support\Facades\DB;
 
 class DriverTest extends TestCase
 {
@@ -24,6 +25,7 @@ class DriverTest extends TestCase
      */
     public function create_and_retrieve_driver()
     {
+        DB::beginTransaction();
         $driver = $this->createDriver();
         $driver->save();
 

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Ramal extends Model
 {
-    protected $fillable = ['n_ramal', 'applicant_id'];
+    protected $fillable = ['n_ramal', 'fk_applicant'];
 
     public function applicant()
     {

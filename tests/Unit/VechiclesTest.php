@@ -6,14 +6,15 @@ use Tests\TestCase;
 use App\Models\Vehicle;
 use App\Models\Solicitation;
 use App\Models\VehicleScale;
+use Illuminate\Support\Facades\DB;
 
 class VehicleTest extends TestCase
 {
     protected function createVehicle()
     {
-        return new Vehicle([
+        return Vehicle::create([
             'type' => 'Sedan',
-            'pref' => 'ABC 123',
+            'pref' => 'ABC123',
             'plate' => 'XYZ 789',
             'brend' => 'Some Brand',
             'status' => 'Active',
@@ -28,8 +29,8 @@ class VehicleTest extends TestCase
      */
     public function create_and_retrieve_vehicle()
     {
+        DB::beginTransaction();
         $vehicle = $this->createVehicle();
-        $vehicle->save();
 
         $vehicleId = $vehicle->id;
         $this->assertIsInt($vehicleId);
@@ -42,6 +43,7 @@ class VehicleTest extends TestCase
      */
     public function it_has_solicitations_relation()
     {
+        DB::beginTransaction();
         $vehicle = new Vehicle();
         $relation = $vehicle->solicitations();
 
@@ -54,6 +56,7 @@ class VehicleTest extends TestCase
      */
     public function it_has_vehicle_scales_relation()
     {
+        DB::beginTransaction();
         $vehicle = new Vehicle();
         $relation = $vehicle->vehicleScales();
 

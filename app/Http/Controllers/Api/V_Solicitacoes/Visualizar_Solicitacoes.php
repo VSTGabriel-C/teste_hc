@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V_Solicitacoes;
 header("Content-type: text/html; charset=utf8");
 use App\Http\Controllers\Controller;
+use App\Models\Solicitation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Crypt;
@@ -10,6 +11,14 @@ use Illuminate\Contracts\Encryption\DecryptException;
 use App\Models\Sql;
 class Visualizar_Solicitacoes extends Controller
 {
+    public function getAllSolicitations()
+    {
+        $vehicle = (new Solicitation)->getAllSolicitations();
+
+        return $vehicle;
+
+    }
+
     public function searchSolicitations(Request $request)
     {
         $req =$request->all();
