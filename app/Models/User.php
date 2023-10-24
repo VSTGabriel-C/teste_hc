@@ -108,25 +108,17 @@ class User extends Authenticatable
 
         $if = User::where("email", $email)->first();
 
-        if($if)
-        {
+        if ($if) {
             $msg = array(
                 'status' => 1,
                 'msg' => "E-mail informado já está cadastrado"
             );
             return json_encode($msg, JSON_UNESCAPED_UNICODE);
-            //return redirect()->route('hc_add_new_admin', $msg);
-        }
-        else
-        {
-            if($senha == $confirm)
-            {
-                if($tipo == "Admin")
-                {
+        } else {
+            if ($senha == $confirm) {
+                if ($tipo == "Admin") {
                     $newTipo = 1;
-                }
-                else if($tipo == "Normal")
-                {
+                } else if ($tipo == "Normal") {
                     $newTipo = 2;
                 }
 
@@ -146,11 +138,7 @@ class User extends Authenticatable
                 );
 
                 return json_encode($msg, JSON_UNESCAPED_UNICODE);
-                //return redirect()->route('hc_add_new_admin', $msg);
-
-            }
-            else
-            {
+            } else {
                 $msg = array(
                     'status' => 1,
                     'msg' => "Senhas não conferem!"
@@ -160,33 +148,32 @@ class User extends Authenticatable
         }
     }
 
-    public function storeIm ($request)
+    public function storeIm($request)
     {
         $nameFile = '';
 
         if ($request->hasFile('image') && $request->file('image')->isValid()) {
-
             $name = uniqid(date('dmY'));
 
             $extension = $request->all()['image']->extension();
 
-            $path="public/images/fotos";
+            $path = "public/images/fotos";
 
-            if($extension != 'jpeg' && $extension != 'png' && $extension != 'svg' && $extension != "jpg")
-            {
-             return redirect()
-             ->back()
-             ->with('error', 'Falha ao fazer upload, formato do arquivo está errado.')
-             ->withInput();
+            if ($extension != 'jpeg' && $extension != 'png' && $extension != 'svg' && $extension != "jpg") {
+                return redirect()
+                    ->back()
+                    ->with('error', 'Falha ao fazer upload, formato do arquivo está errado.')
+                    ->withInput();
             }
             $nameFile = "{$name}.{$extension}";
 
             $upload = $request->file('image')->storeAS($path, $nameFile);
-            if ( !$upload )
+
+            if (!$upload)
                 return redirect()
-                            ->back()
-                            ->with('error', 'Falha ao fazer upload')
-                            ->withInput();
+                    ->back()
+                    ->with('error', 'Falha ao fazer upload')
+                    ->withInput();
         }
         return $nameFile;
     }
@@ -207,8 +194,165 @@ class User extends Authenticatable
 
     public function get_Users_By_Id($id)
     {
-        $res = User::where("id", $id)->select("name","email")->get();
+        $res = User::where("id", $id)->select("name", "email")->first();
 
         return json_encode($res);
+    }
+
+    public function hbl_desb(Request $request)
+    {
+        $ativo = $request->ativo;
+        $id = $request->id;
+
+        if ($ativo == 1) {
+            $hbl_des = User::where("id", $id)->update(["active" => 0]);
+
+            if ($hbl_des) {
+                $msg = [
+                    "status" => 1,
+                    "msg" => "Usuario desabilitado com sucesso!"
+                ];
+                return json_encode($msg, JSON_UNESCAPED_UNICODE);
+            } else {
+                $msg = [
+                    "status" => 0,
+                    "msg" => "Erro ao desabilitar usuario!"
+                ];
+                return json_encode($msg, JSON_UNESCAPED_UNICODE);
+            }
+        } else if ($ativo == 0) {
+            $hbl_des = User::where("id", $id)->update(["active" => 1]);
+
+            if ($hbl_des) {
+                $msg = [
+                    "status" => 1,
+                    "msg" => "Usuario habilitado com sucesso!"
+                ];
+                return json_encode($msg, JSON_UNESCAPED_UNICODE);
+            } else {
+                $msg = [
+                    "status" => 0,
+                    "msg" => "Erro ao habilitar usuario!"
+                ];
+                return json_encode($msg, JSON_UNESCAPED_UNICODE);
+            }
+        }
+    }
+
+    public function edit_User_By_Id(Request $request)
+    {
+        $name = $request->nome;
+        $e_mail = $request->email;
+        $senha = $request->password;
+        $senha_C = $request->password_C;
+        $ids = $request->idE;
+        $picEdit = $this->storeImE($request, $ids);
+
+        if ($picEdit != '') {
+            $result = User::where("id", $ids)->update(["camFoto" => $picEdit]);
+
+            if ($result) {
+                $msg = [
+                    "status" => 1,
+                    "msg" => "Foto Editada com sucesso. Por favor relogue no sistema!"
+                ];
+
+                return json_encode($msg, JSON_UNESCAPED_UNICODE);
+            } else {
+                $msg = [
+                    "status" => 0,
+                    "msg" => "Não foi possivel editar a foto."
+                ];
+                return json_encode($msg, JSON_UNESCAPED_UNICODE);
+            }
+        }
+
+        if (is_null($senha) && is_null($senha_C)) {
+            $result = User::where("id", $ids)->update(["name" => $name, "email" => $e_mail]);
+
+            if ($result) {
+                $msg = [
+                    "status" => 1,
+                    "msg" => "Usuario editado com sucesso!"
+                ];
+                return json_encode($msg, JSON_UNESCAPED_UNICODE);
+            } else {
+                $msg = [
+                    "status" => 0,
+                    "msg" => "Não foi possivel editar o usuario pois nada foi alterado."
+                ];
+                return json_encode($msg, JSON_UNESCAPED_UNICODE);
+            }
+        }
+
+        if ($senha == $senha_C) {
+            $result = User::where("id", $ids)->update(["name" => $name, "email" => $e_mail, "password" => Hash::make($senha)]);
+            if ($result) {
+                $msg = [
+                    "status" => 1,
+                    "msg" => "Usuario editado com sucesso!"
+                ];
+
+                return json_encode($msg, JSON_UNESCAPED_UNICODE);;
+            } else {
+                $msg = [
+                    "status" => 0,
+                    "msg" => "Não foi possivel editar o usuario (Senhas não conferem) !"
+                ];
+
+                return json_encode($msg, JSON_UNESCAPED_UNICODE);
+            }
+        } else {
+            $msg = [
+                "status" => 0,
+                "msg" => "Não foi possivel alterar o usuario (Senhas não conferem) !"
+            ];
+            return json_encode($msg, JSON_UNESCAPED_UNICODE);
+        }
+    }
+
+    public function storeImE($request, $id)
+    {
+
+        $res = DB::select(
+            "SELECT
+        u.camFoto
+        FROM users u
+        WHERE u.id = ?",
+            [
+                $id
+            ]
+        );
+
+        $nameFile = '';
+
+        if ($request->hasFile('imageE') && $request->file('imageE')->isValid()) {
+            if ($res[0]->camFoto != '') {
+                unlink(public_path('/storage/images/fotos/' . $res[0]->camFoto));
+            }
+
+            $name = uniqid(date('dmY'));
+
+            $extension = $request->all()['imageE']->extension();
+
+            $path = "public/images/fotos";
+
+            if ($extension != 'jpeg' && $extension != 'png' && $extension != 'svg' && $extension != "jpg") {
+                return redirect()
+                    ->back()
+                    ->with('error', 'Falha ao fazer upload, formato do arquivo está errado.')
+                    ->withInput();
+            }
+            $nameFile = "{$name}.{$extension}";
+
+            $upload = $request->file('imageE')->storeAS($path, $nameFile);
+            if (!$upload)
+                return redirect()
+                    ->back()
+                    ->with('error', 'Falha ao fazer upload')
+                    ->withInput();
+        }
+
+        return $nameFile;
     }
 }

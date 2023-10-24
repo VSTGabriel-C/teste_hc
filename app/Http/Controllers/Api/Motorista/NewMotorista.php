@@ -44,4 +44,11 @@ class NewMotorista extends Controller
         return $driver;
 
     }
+
+    public function getMotoristaById($id)
+    {
+        $driver = (new Driver())->getDriverById($id);
+
+        return $driver;
+    }
 }

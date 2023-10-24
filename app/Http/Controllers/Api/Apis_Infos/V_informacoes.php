@@ -1,7 +1,9 @@
 <?php
 
 namespace App\Http\Controllers\Api\Apis_Infos;
+
 date_default_timezone_set('America/Sao_Paulo');
+
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -13,17 +15,11 @@ class V_informacoes extends Controller
     {
         $data_atual = date("Y-m-d");
         $ano_mes_atual = date("Y-m");
-        // $req =$request->all();
-        // $ano_inico = $req['inicio'];
-
-        // $ano_mes_inico = `{$ano_inicio}-01`;
         $ano_mes_inico = "2022-01";
         $em_andamento = 0;
         $concluida = 0;
-        $concluida_mes = 0;
         $cancelada = 0;
         $newArr = array();
-
 
         $queryQuilometragem = DB::select("SELECT DISTINCT
         COUNT(s.id) as total
@@ -35,8 +31,7 @@ class V_informacoes extends Controller
         dir_volta vt ON s.id = vt.fk_solicitation
     WHERE (ch.aviso_ch = 1 or vt.aviso_vt = 1);");
 
-    $total = $queryQuilometragem[0];
-
+        $total = $queryQuilometragem[0];
 
         $solicitacao_dia = DB::select("SELECT
         distinct
@@ -68,19 +63,13 @@ class V_informacoes extends Controller
         AND CAST(s.data AS DATE) <= '{$data_atual}'");
 
 
-        if(count($solicitacao_dia) > 0 && count($status) > 0)
-        {
-            foreach($status as $key => $value)
-            {
-                if($value->retorno == "NOK" && $value->cancelamento == "NOK" && $value->ida == 'OK')
-                {
+        if (count($solicitacao_dia) > 0 && count($status) > 0) {
+            foreach ($status as $key => $value) {
+                if ($value->retorno == "NOK" && $value->cancelamento == "NOK" && $value->ida == 'OK') {
                     $em_andamento = $em_andamento + 1;
-
-                }else if($value->retorno == "OK" && $value->cancelamento == "NOK" )
-                {
+                } else if ($value->retorno == "OK" && $value->cancelamento == "NOK") {
                     $concluida = $concluida + 1;
-                }else if($value->retorno == "NOK" && $value->ida == 'NOK' && $value->cancelamento == "OK" )
-                {
+                } else if ($value->retorno == "NOK" && $value->ida == 'NOK' && $value->cancelamento == "OK") {
                     $cancelada = $cancelada + 1;
                 }
             }
@@ -89,15 +78,15 @@ class V_informacoes extends Controller
                 "qtde_concluida" => $concluida,
                 "qtde_andamento" => $em_andamento,
                 "qtde_cancelamento" => $cancelada,
-                "qtde_quilometragem" => $total -> total,
+                "qtde_quilometragem" => $total->total,
             ];
-        }else{
+        } else {
             $newArr[] = [
                 "qtde_dia" => 0,
                 "qtde_concluida" => $concluida,
                 "qtde_andamento" => $em_andamento,
                 "qtde_cancelamento" => $cancelada,
-                "qtde_quilometragem" => $total -> total,
+                "qtde_quilometragem" => $total->total,
             ];
         }
 
@@ -106,8 +95,8 @@ class V_informacoes extends Controller
         ];
 
         return json_encode($newArr);
-
     }
+
     public function number_SolicitationsPIE()
     {
         $newArrP = array();
@@ -137,13 +126,13 @@ class V_informacoes extends Controller
 
         $cancelaP = $cancP['0'];
 
-        if(!$cancelaP || !$andaP || !$retornP){
+        if (!$cancelaP || !$andaP || !$retornP) {
             $newArrP[] = [
-                "qtde_concluidaP" =>0,
+                "qtde_concluidaP" => 0,
                 "qtde_andamentoP" => 0,
                 "qtde_cancelamentoP" => 0
             ];
-        }else{
+        } else {
             $newArrP[] = [
                 "qtde_concluidaP" => $retornP->retorno,
                 "qtde_andamentoP" => $andaP->andamento,
@@ -152,10 +141,7 @@ class V_informacoes extends Controller
         }
 
         return json_encode($newArrP);
-
     }
-
-
 
     public function mediaKilometragem()
     {
@@ -188,34 +174,32 @@ class V_informacoes extends Controller
         ORDER BY CAST(s.data AS DATE) LIMIT 8");
 
 
-foreach($response as $key => $value)
-   {
-    // $media_dia = ($value['dia_T'] / $value['QTDE']);
-    $newArr[$key] = [
-        "dia_sem" => $this->day_Of_Week($value['data']),
-        "total" => $value['Total']
-    ];
-   }
+        foreach ($response as $key => $value) {
+            // $media_dia = ($value['dia_T'] / $value['QTDE']);
+            $newArr[$key] = [
+                "dia_sem" => $this->day_Of_Week($value['data']),
+                "total" => $value['Total']
+            ];
+        }
 
-   return json_encode($newArr);
-
-}
+        return json_encode($newArr);
+    }
     public function card_dados_anual(Request $request)
     {
         $data_atual = date("Y-m-d");
 
         $ano_mes_atual = date("Y-m");
-        $req =$request->all();
+        $req = $request->all();
         $ano_mes_inico = $req['inicio'];
         // $ano_mes_inico = "2022-01";
-        $ano_inicio = strtok($ano_mes_inico,'-');
+        $ano_inicio = strtok($ano_mes_inico, '-');
 
         $sql = new Sql();
 
         $newArr = array();
 
 
-        if(strtok($ano_mes_atual,'-') === "2021"){
+        if (strtok($ano_mes_atual, '-') === "2021") {
             $response = $sql->select("SELECT
             MONTH(s.data) AS Mes,
             IFNULL(SUM(dv.km - di.km), 0) AS Total
@@ -239,8 +223,7 @@ foreach($response as $key => $value)
             BETWEEN '$ano_inicio-12' AND '$ano_inicio-12'
             AND s.retorno = 'OK' GROUP BY Mes_realizadas");
         }
-        if(strtok($ano_mes_inico,'-') < strtok($ano_mes_atual,'-') && strtok($ano_mes_inico,'-') != '2019')
-        {
+        if (strtok($ano_mes_inico, '-') < strtok($ano_mes_atual, '-') && strtok($ano_mes_inico, '-') != '2019') {
             $response['quilo'] = $sql->select("SELECT
             MONTH(s.data) AS Mes,
             IFNULL(SUM(dv.km - ch.km), 0) AS Total
@@ -263,8 +246,7 @@ foreach($response as $key => $value)
             WHERE DATE_FORMAT(s.data,'%Y-%m')
             BETWEEN '$ano_mes_inico' AND '$ano_inicio-12'
             AND s.retorno = 'OK' GROUP BY Mes_realizadas");
-        }
-        else {
+        } else {
             $response['quilo'] = $sql->select("SELECT
             MONTH(s.data) AS Mes,
             IFNULL(SUM(dv.km - ch.km), 0) AS Total
@@ -290,9 +272,8 @@ foreach($response as $key => $value)
             BETWEEN '$ano_mes_inico' AND '$ano_mes_atual' GROUP BY Mes_realizadas");
         }
 
-   return json_encode(array_merge($response,$response2));
-
-}
+        return json_encode(array_merge($response, $response2));
+    }
 
     private function seven_Days_Ant($data_atual)
     {
@@ -304,16 +285,16 @@ foreach($response as $key => $value)
         return $dias_anteriores;
     }
 
-    public function get_Concluidas(Request $request){
+    public function get_Concluidas(Request $request)
+    {
 
-        $req =$request->all();
+        $req = $request->all();
         $arr = [];
         $query  = $this->queryConcluidas($req['data']);
         $sql = new SQL();
         $exec = $sql->select($query);
 
-        if(count($exec) > 0)
-        {
+        if (count($exec) > 0) {
             // $newValues = $this->to_utf8($exec);
             $newValues = $exec;
             //return json_encode($newValues, JSON_UNESCAPED_UNICODE);
@@ -321,20 +302,18 @@ foreach($response as $key => $value)
             $arr[] = ['data' => $newValues];
             $smS = $arr;
 
-		return json_encode($smS, JSON_UNESCAPED_UNICODE);
-        }else
-        {
+            return json_encode($smS, JSON_UNESCAPED_UNICODE);
+        } else {
             return json_encode($msg = array(
                 "status"    => 0,
                 "msg"       => "Não foi possivel encontar solicitações concluidas na data de hoje."
             ), JSON_UNESCAPED_UNICODE);
         }
-
     }
 
 
     public function queryConcluidas($datP)
-        {
+    {
 
         $rawQuery = "SELECT DISTINCT
         s.n_ficha AS n_ficha,
@@ -351,43 +330,38 @@ foreach($response as $key => $value)
         solicitante sol ON s.fk_solicitante = sol.id
             LEFT JOIN
         veiculo v ON s.fk_veiculo = v.id
-        WHERE s.data = '$datP' AND s.retorno = 'OK';" ;
-
+        WHERE s.data = '$datP' AND s.retorno = 'OK';";
 
         return $rawQuery;
     }
-    public function get_Diarias(Request $request){
+    public function get_Diarias(Request $request)
+    {
 
-        $req =$request->all();
+        $req = $request->all();
         $arr = [];
         $query  = $this->queryDiarias($req['data']);
         $sql = new SQL();
         $exec = $sql->select($query);
 
-        if(count($exec) > 0)
-        {
+        if (count($exec) > 0) {
             $newValues = $exec;
-            // $newValues = $this->to_utf8($exec);
-            //return json_encode($newValues, JSON_UNESCAPED_UNICODE);
 
             $arr[] = ['data' => $newValues];
             $smS = $arr;
 
-        return json_encode($smS, JSON_UNESCAPED_UNICODE);
-        }else
-        {
+            return json_encode($smS, JSON_UNESCAPED_UNICODE);
+        } else {
             return json_encode($msg = array(
                 "status"    => 0,
                 "msg"       => "Não foi possivel encontar solicitações na data de hoje."
             ), JSON_UNESCAPED_UNICODE);
         }
-
     }
 
     public function queryDiarias($datP)
     {
 
-    $rawQuery = "SELECT DISTINCT
+        $rawQuery = "SELECT DISTINCT
     s.n_ficha AS n_ficha,
     sol.nome AS nome_solicitante,
     m.nome AS nome_motorista,
@@ -405,22 +379,21 @@ foreach($response as $key => $value)
     solicitante sol ON s.fk_solicitante = sol.id
         LEFT JOIN
     veiculo v ON s.fk_veiculo = v.id
-    WHERE s.data = '$datP';" ;
+    WHERE s.data = '$datP';";
 
-
-    return $rawQuery;
+        return $rawQuery;
     }
 
-    public function get_Andamento(Request $request){
+    public function get_Andamento(Request $request)
+    {
 
-        $req =$request->all();
+        $req = $request->all();
         $arr = [];
         $query  = $this->queryAndamento($req['data']);
         $sql = new SQL();
         $exec = $sql->select($query);
 
-        if(count($exec) > 0)
-        {
+        if (count($exec) > 0) {
             $newValues = $exec;
             // $newValues = $this->to_utf8($exec);
             //return json_encode($newValues, JSON_UNESCAPED_UNICODE);
@@ -428,27 +401,25 @@ foreach($response as $key => $value)
             $arr[] = ['data' => $newValues];
             $smS = $arr;
 
-        return json_encode($smS, JSON_UNESCAPED_UNICODE);
-        }else
-        {
+            return json_encode($smS, JSON_UNESCAPED_UNICODE);
+        } else {
             return json_encode($msg = array(
                 "status"    => 0,
                 "msg"       => "Não foi possivel encontar solicitações em andamento na data de hoje."
             ), JSON_UNESCAPED_UNICODE);
         }
-
     }
 
-    public function get_CancelamentoModal(Request $request){
+    public function get_CancelamentoModal(Request $request)
+    {
 
-        $req =$request->all();
+        $req = $request->all();
         $arr = [];
         $query  = $this->queryCancelamento($req['data']);
         $sql = new SQL();
         $exec = $sql->select($query);
 
-        if(count($exec) > 0)
-        {
+        if (count($exec) > 0) {
             // $newValues = $this->to_utf8($exec);
             $newValues = $exec;
             //return json_encode($newValues, JSON_UNESCAPED_UNICODE);
@@ -456,18 +427,17 @@ foreach($response as $key => $value)
             $arr[] = ['data' => $newValues];
             $smS = $arr;
 
-        return json_encode($smS, JSON_UNESCAPED_UNICODE);
-        }else
-        {
+            return json_encode($smS, JSON_UNESCAPED_UNICODE);
+        } else {
             return json_encode($msg = array(
                 "status"    => 0,
                 "msg"       => "Não foi possivel encontar solicitações canceladas na data de hoje."
             ), JSON_UNESCAPED_UNICODE);
         }
-
     }
 
-    public function get_QuilometragemModal(Request $request){
+    public function get_QuilometragemModal(Request $request)
+    {
 
         $arr = [];
         // $query  = $this->queryCancelamento($req['data']);]
@@ -498,23 +468,20 @@ foreach($response as $key => $value)
         $sql = new SQL();
         $exec = $sql->select($query);
 
-        if(count($exec) > 0)
-        {
+        if (count($exec) > 0) {
             $newValues = $exec;
             //return json_encode($newValues, JSON_UNESCAPED_UNICODE);
 
             $arr[] = ['data' => $newValues];
             $smS = $arr;
 
-        return json_encode($smS, JSON_UNESCAPED_UNICODE);
-        }else
-        {
+            return json_encode($smS, JSON_UNESCAPED_UNICODE);
+        } else {
             return json_encode($msg = array(
                 "status"    => 0,
                 "msg"       => "Não foi possivel encontar solicitações com alta quilometragem."
             ), JSON_UNESCAPED_UNICODE);
         }
-
     }
 
     public function get_Cancelamentos()
@@ -533,27 +500,24 @@ foreach($response as $key => $value)
         $sql2 = new SQL();
         $Concluidas = $sql2->select($queryConc);
 
-        if(!$Canceladas){
+        if (!$Canceladas) {
             $Canceladas[] = ['data' => $data_atualL, 'CANCELADAS' => 0];
         }
-        if(!$Concluidas){
+        if (!$Concluidas) {
             $Concluidas[] = ['data' => $data_atualL, 'FEITAS' => 0];
         }
 
-        foreach($Concluidas as $key => $value)
-        {
-            $datasF[]=$value['data'];
+        foreach ($Concluidas as $key => $value) {
+            $datasF[] = $value['data'];
             $feitas[] = $value['FEITAS'];
         }
-        foreach($Canceladas as $key2 => $value2)
-        {
-            $datasC[]=$value2['data'];
+        foreach ($Canceladas as $key2 => $value2) {
+            $datasC[] = $value2['data'];
             $canc[] = $value2['CANCELADAS'];
         }
-        $arr[] = ['datasC' => $datasC, 'feitasF' => $feitas,'datasFull' => $datasF, 'Canc' => $canc];
+        $arr[] = ['datasC' => $datasC, 'feitasF' => $feitas, 'datasFull' => $datasF, 'Canc' => $canc];
 
-    return json_encode($arr, JSON_UNESCAPED_UNICODE);
-
+        return json_encode($arr, JSON_UNESCAPED_UNICODE);
     }
 
     // public function isnull($var, $default=null) {
@@ -562,7 +526,7 @@ foreach($response as $key => $value)
     public function queryCancelamento($datP)
     {
 
-    $rawQuery = "SELECT DISTINCT
+        $rawQuery = "SELECT DISTINCT
     s.n_ficha AS n_ficha,
     sol.nome AS nome_solicitante,
     m.nome AS nome_motorista,
@@ -577,16 +541,16 @@ foreach($response as $key => $value)
     solicitante sol ON s.fk_solicitante = sol.id
         LEFT JOIN
     veiculo v ON s.fk_veiculo = v.id
-    WHERE s.data = '$datP' AND s.retorno = 'NOK' AND s.ida = 'NOK' AND s.cancelamento = 'OK';" ;
+    WHERE s.data = '$datP' AND s.retorno = 'NOK' AND s.ida = 'NOK' AND s.cancelamento = 'OK';";
 
 
-    return $rawQuery;
+        return $rawQuery;
     }
 
     public function queryAndamento($datP)
     {
 
-    $rawQuery = "SELECT DISTINCT
+        $rawQuery = "SELECT DISTINCT
     s.n_ficha AS n_ficha,
     sol.nome AS nome_solicitante,
     m.nome AS nome_motorista,
@@ -601,10 +565,10 @@ foreach($response as $key => $value)
     solicitante sol ON s.fk_solicitante = sol.id
         LEFT JOIN
     veiculo v ON s.fk_veiculo = v.id
-    WHERE s.data = '$datP' AND s.retorno = 'NOK' AND s.cancelamento = 'NOK';" ;
+    WHERE s.data = '$datP' AND s.retorno = 'NOK' AND s.cancelamento = 'NOK';";
 
 
-    return $rawQuery;
+        return $rawQuery;
     }
 
     private function day_Of_Week($day)
@@ -613,46 +577,40 @@ foreach($response as $key => $value)
 
         $diasemana_numero = date('w', strtotime($day));
 
-    return $day_week = $diasemana[$diasemana_numero];
+        return $day_week = $diasemana[$diasemana_numero];
     }
 
     private function to_utf8($data)
     {
-    $newArr = array();
-    foreach($data as $key => $value){
-        if(count($value) == 6)
-        {
-            foreach($data as $key2 => $value2)
-            {
-                $newArr[$key2] = [
-                'n_ficha' => utf8_encode($value2['n_ficha']),
-                'nome_solicitante' => utf8_encode($value2['nome_solicitante']),
-                'nome_motorista' => utf8_encode($value2['nome_motorista']),
-                'destino' => utf8_encode($value2['destino']),
-                'ende' => utf8_encode($value2['ende']),
-                'hora' => utf8_encode($value2['hora'])
-                ];
-            }
-        }
-         else if(count($value) == 9)
-            {
-                foreach($data as $key2 => $value2)
-                {
+        $newArr = array();
+        foreach ($data as $key => $value) {
+            if (count($value) == 6) {
+                foreach ($data as $key2 => $value2) {
                     $newArr[$key2] = [
-                    'n_ficha' => utf8_encode($value2['n_ficha']),
-                    'nome_solicitante' => utf8_encode($value2['nome_solicitante']),
-                    'nome_motorista' => utf8_encode($value2['nome_motorista']),
-                    'retorno' => utf8_encode($value2['retorno']),
-                    'ida' => utf8_encode($value2['ida']),
-                    'cancelamento' => utf8_encode($value2['cancelamento']),
-                    'destino' => utf8_encode($value2['destino']),
-                    'ende' => utf8_encode($value2['ende']),
-                    'hora' => utf8_encode($value2['hora'])
+                        'n_ficha' => utf8_encode($value2['n_ficha']),
+                        'nome_solicitante' => utf8_encode($value2['nome_solicitante']),
+                        'nome_motorista' => utf8_encode($value2['nome_motorista']),
+                        'destino' => utf8_encode($value2['destino']),
+                        'ende' => utf8_encode($value2['ende']),
+                        'hora' => utf8_encode($value2['hora'])
+                    ];
+                }
+            } else if (count($value) == 9) {
+                foreach ($data as $key2 => $value2) {
+                    $newArr[$key2] = [
+                        'n_ficha' => utf8_encode($value2['n_ficha']),
+                        'nome_solicitante' => utf8_encode($value2['nome_solicitante']),
+                        'nome_motorista' => utf8_encode($value2['nome_motorista']),
+                        'retorno' => utf8_encode($value2['retorno']),
+                        'ida' => utf8_encode($value2['ida']),
+                        'cancelamento' => utf8_encode($value2['cancelamento']),
+                        'destino' => utf8_encode($value2['destino']),
+                        'ende' => utf8_encode($value2['ende']),
+                        'hora' => utf8_encode($value2['hora'])
                     ];
                 }
             }
+        }
+        return $newArr;
     }
-    return $newArr;
-    }
-
 }

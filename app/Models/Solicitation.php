@@ -109,18 +109,16 @@ class Solicitation extends Model
 
     public function newSolicitation(Request $request)
     {
-        $msg = array();
-
         //DADOS DA SOLICITAÇÂO
         $ficha = Solicitation::where('n_file', $request->n_ficha_sol)->first();
         if ($ficha) {
-            $msg = array(
+            $msg = [
                 "status" => 0,
                 "msg" => "Não foi possivel cadastrar uma nova solicitação N° da ficha já existe !"
-            );
+            ];
             return json_encode($msg, JSON_UNESCAPED_UNICODE);
         }
-        $ee = DB::transaction(function () use ($request, $msg) {
+        $ee = DB::transaction(function () use ($request) {
             DB::beginTransaction();
 
             $nome_paciente = Crypt::encryptString($request->n_paciente);

@@ -37,86 +37,81 @@ use App\Http\Controllers\Api\Escala\Escala;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// Route::middleware('auth:api')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
 
-// Public Routes
-Route::post('/login', [AuthController::class, 'login']);
 
-Route::post('/new_solicitation', [NewSolicitations::class, 'newSolicitation'])->name('hc.api.newSolicitation');
+// Route::get('/get_solicitations_filter', [Visualizar_Solicitacoes::class, 'searchSolicitations'])
+//     ->name('hc.api.get_solicitations_filter');
 
-// ROTAS PRIVADAS
-Route::group(['middleware' => ['auth:sanctum']], function () {
-});
+// Route::get('/get_solicitations_filterDIA', [Visualizar_Solicitacoes::class, 'searchSolicitationsDIA'])
+//     ->name('hc.api.get_solicitationsDIA_filter');
 
-//Route::post('/new_solicitation', [NewSolicitations::class, 'newSolicitation'])->name('hc.api.newSolicitation');
-Route::post('/nova_sol', [NewSolicitations::class, 'novaSol'])->name('hc.api.newSolicitation');
-Route::get('/solicitations_all', [Visualizar_Solicitacoes::class, 'getAllSolicitations']);
-Route::get('/get_solicitations_filter', [Visualizar_Solicitacoes::class, 'searchSolicitations'])->name('hc.api.get_solicitations_filter');
-Route::get('/get_solicitations_filterDIA', [Visualizar_Solicitacoes::class, 'searchSolicitationsDIA'])->name('hc.api.get_solicitationsDIA_filter');
-Route::get('/get_solicitations_filter_by_id/{id}', [Visualizar_Solicitacoes::class, 'searchSolicitationById'])->name('hc.api.get_solicitations_byId');
-Route::post('/get_All_by_id/{id}', [Editar_Solicitacoes::class, 'editar_solicitacoes'])->name('hc.api.get_solicitations_byId');
+// Route::get('/get_solicitations_filter_by_id/{id}', [Visualizar_Solicitacoes::class, 'searchSolicitationById'])
+//     ->name('hc.api.get_solicitations_byId');
 
-//ROTAS SOLICITAÇÕES
-Route::get('/teste', [Teste::class, 'teste'])->name('hc.api.d');
+// Route::post('/get_All_by_id/{id}', [Editar_Solicitacoes::class, 'editar_solicitacoes'])
+//     ->name('hc.api.get_solicitations_byId');
 
-//Rotas Avisos
 
-Route::get('/get_avisos',[Avisos::class, 'getAvisos'])->name('hc.api.getAvisos');
-Route::get('/warnings', [Warnings::class, "makeMsg"])->name("hc.api.Warning");
+
+Route::post('/login', [AuthController::class, 'login']); // feito
+
+//ROTAS SOLICITACOES
+
+Route::post('/new_solicitation', [NewSolicitations::class, 'newSolicitation'])->name('hc.api.newSolicitation'); // feito
+
+Route::get('/solicitations_all', [Visualizar_Solicitacoes::class, 'getAllSolicitations']); // Feito
+
 //ROTAS MOTORISTA
 
-//GET
-Route::get('/motorista_all', [NewMotorista::class, 'getMotorista'])->name('hc.api.getMotorista');
-Route::get('/motorista_allL', [NewMotorista::class, 'getMotoristaL'])->name('hc.api.getMotoristaL');
-Route::get('/get_motorista_disponivel', [NewMotorista::class, 'getMotoristaDisponivel'])->name('hc.api.getMotorista.disponivel');
-Route::get('/get_motorista_habilitado', [NewMotorista::class, 'getMotoristaHabilitado'])->name('hc.api.getMotorista.habilitado');
-Route::get('/get_motorista_by_id/{id}', [EditMotorista::class, 'getMotoristaById'])->name('hc.api.getMotoristaById');
-//POST
-Route::post('/add_new_motorista', [NewMotorista::class, 'newMotorista'])->name('hc.api.newMotorista');
-Route::post('/motorista_delete', [ExcludeMotorista::class, 'excludeMotorista'])->name('hc.api.excludeMotorista');
-Route::post('/motorista_edit', [EditMotorista::class, 'editMotorista'])->name('hc.api.editMotorista');
+Route::get('/motorista_all', [NewMotorista::class, 'getMotorista'])->name('hc.api.getMotorista'); // Feito
+Route::get('/motorista_allL', [NewMotorista::class, 'getMotoristaL'])->name('hc.api.getMotoristaL'); // Feito
+Route::get('/get_motorista_disponivel', [NewMotorista::class, 'getMotoristaDisponivel'])->name('hc.api.getMotorista.disponivel'); // Feito
+Route::get('/get_motorista_habilitado', [NewMotorista::class, 'getMotoristaHabilitado'])->name('hc.api.getMotorista.habilitado'); // Feito
+Route::get('/get_motorista_by_id/{id}', [NewMotorista::class, 'getMotoristaById'])->name('hc.api.getMotoristaById'); // Feito
+
+Route::post('/add_new_motorista', [NewMotorista::class, 'newMotorista'])->name('hc.api.newMotorista'); // Feito
+Route::post('/motorista_delete', [ExcludeMotorista::class, 'excludeMotorista'])->name('hc.api.excludeMotorista'); //Feito
+Route::post('/motorista_edit', [EditMotorista::class, 'editMotorista'])->name('hc.api.editMotorista'); // Feito
 
 //ROTAS VEICULO
-//GET
-Route::get('/veiculo_all', [Veiculo_Get_Data::class, 'getVeiculos'])->name('hc.api.getVeiculo');
-Route::get('/get_veiculo_by_id/{id}', [Veiculo_Get_Data::class, 'getVeiculoById'])->name('hc.api.getVeiculoById');
-Route::get('/get_veiculo_disponivel', [Veiculo_Get_Data::class, 'getVeiculoDisponivel'])->name('hc.api.getVeiculoDisponivel');
-Route::get('/get_veiculo_habilitado', [Veiculo_Get_Data::class, 'getVeiculoHabilitado'])->name('hc.api.getVeiculoHabilitado');
-//POST
-Route::post('/add_new_veiculo', [NewVeiculo::class, 'newVeiculo'])->name('hc.api.add_new_veiculo');
-Route::post('/veiculo_delete', [ExcludeVeiculo::class, 'excludeVeiculo'])->name('hc.api.veiculo_delete');
-Route::post('/veiculo_edit', [EditVeiculo::class, 'editVeiculo'])->name('hc.api.veiculo_edit');
+Route::get('/veiculo_all', [Veiculo_Get_Data::class, 'getVeiculos'])->name('hc.api.getVeiculo'); // Feito
+Route::get('/get_veiculo_by_id/{id}', [Veiculo_Get_Data::class, 'getVeiculoById'])->name('hc.api.getVeiculoById'); // Feito
+Route::get('/get_veiculo_disponivel', [Veiculo_Get_Data::class, 'getVeiculoDisponivel'])->name('hc.api.getVeiculoDisponivel'); // Feito
+Route::get('/get_veiculo_habilitado', [Veiculo_Get_Data::class, 'getVeiculoHabilitado'])->name('hc.api.getVeiculoHabilitado'); // Feito
+
+Route::post('/add_new_veiculo', [NewVeiculo::class, 'newVeiculo'])->name('hc.api.add_new_veiculo'); // Feito
+Route::post('/veiculo_delete', [ExcludeVeiculo::class, 'excludeVeiculo'])->name('hc.api.veiculo_delete'); // Feito
+Route::post('/veiculo_edit', [EditVeiculo::class, 'editVeiculo'])->name('hc.api.veiculo_edit'); // Feito
 
 //ROTAS SOLICITANTE
-//GET
-Route::get('/solicitante_all', [NewSolicitante::class, 'getSolicitante'])->name('hc.api.solicitante_all');
-Route::get('/solicitante_allS', [NewSolicitante::class, 'getSolicitanteS'])->name('hc.api.solicitante_allS');
-Route::get('/solicitante_all_condition', [NewSolicitante::class, 'getSolicitante_condition'])->name('hc.api.solicitante_all_condition');
-Route::get('/get_solicitante_by_id/{id}', [EditSolicitante::class, 'editSolicitanteById'])->name('hc.api.editSolicitanteById');
-//POST
-Route::post('/add_new_solicitante', [NewSolicitante::class, 'newSolicitante'])->name('hc.api.add_new_solicitante');
-Route::post('/add_new_solicitante_bot', [NewSolicitante::class, 'newSolicitante_bot'])->name('hc.api.add_new_solicitante_bot');
-Route::post('/edit_solicitante', [EditSolicitante::class, 'editSolicitante'])->name('hc.api.editSolicitante');
-Route::post('/delete_solicitante', [ExcludeSolicitante::class, 'excludeSolicitante'])->name('hc.api.deleteSolicitante');
+
+Route::get('/solicitante_all', [NewSolicitante::class, 'getSolicitante'])->name('hc.api.solicitante_all'); // Feito
+Route::get('/solicitante_allS', [NewSolicitante::class, 'getSolicitanteS'])->name('hc.api.solicitante_allS'); // Feito
+Route::get('/solicitante_all_condition', [NewSolicitante::class, 'getSolicitante_condition'])->name('hc.api.solicitante_all_condition'); // Feito
+Route::get('/get_solicitante_by_id/{id}', [NewSolicitante::class, 'getSolicitanteById'])->name('hc.api.editSolicitanteById'); // Feito
+
+Route::post('/add_new_solicitante', [NewSolicitante::class, 'newSolicitante'])->name('hc.api.add_new_solicitante'); // Feito
+Route::post('/add_new_solicitante_bot', [NewSolicitante::class, 'newSolicitante_bot'])->name('hc.api.add_new_solicitante_bot'); // Feito
+Route::post('/edit_solicitante', [EditSolicitante::class, 'editSolicitante'])->name('hc.api.editSolicitante'); // Feito
+Route::post('/delete_solicitante', [ExcludeSolicitante::class, 'excludeSolicitante'])->name('hc.api.deleteSolicitante'); // Feito
 
 
 //ROTAS USUARIO
-//GET
-Route::get('/all_users_1', [EditarUser::class, 'allUserss'])->name('hc.api.get_All_Users');
-Route::get('/all_users_1L', [EditarUser::class, 'allUserssL'])->name('hc.api.get_All_UsersL');
-Route::get('/usuario_by_id/{id}', [EditarUser::class, 'get_Users_By_Id'])->name('hc.api.get_Users_By_Id');
-//POST
-Route::post('/new_user', [NewUser::class, 'newUser'])->name('hc.api.new_user');
-Route::post('/habilitar_desabilitar', [DesabilitarUser::class, 'hbl_desb'])->name('hc.api.edit_User_By_Id');
-Route::post('/edit_usuario_by_id', [EditarUser::class, 'edit_User_By_Id'])->name('hc.api.edit_User_By_Ids');
+
+Route::get('/all_users_1', [EditarUser::class, 'allUserss'])->name('hc.api.get_All_Users'); // Feito
+Route::get('/all_users_1L', [EditarUser::class, 'allUserssL'])->name('hc.api.get_All_UsersL'); // Feito
+Route::get('/usuario_by_id/{id}', [EditarUser::class, 'get_Users_By_Id'])->name('hc.api.get_Users_By_Id'); // Feito
+
+Route::post('/new_user', [NewUser::class, 'newUser'])->name('hc.api.new_user'); // Feito
+Route::post('/habilitar_desabilitar', [DesabilitarUser::class, 'hbl_desb'])->name('hc.api.edit_User_By_Id'); // Feito
+Route::post('/edit_usuario_by_id', [EditarUser::class, 'edit_User_By_Id'])->name('hc.api.edit_User_By_Ids'); // Feito
 
 //API DESLOG
 
-Route::get("/deslogar_user", [MakeLogin::class, "logout"])->name("hc.api.deslogar_user");
-
-//TESTE API
+Route::get("/deslogar_user", [MakeLogin::class, "logout"])->name("hc.api.deslogar_user"); // Feito
 
 
 //APIS INFORMAÇÔES
@@ -133,13 +128,12 @@ Route::get("/get_QuilometragemModal", [V_informacoes::class, "get_QuilometragemM
 
 
 //ESCALAS
-//GET
+
 Route::get('/get-all-escalas', [Escala::class, 'getAllEscalasController']);
 Route::get('/active-deactive', [Escala::class, 'activeDeactive']);
 Route::get('/retrieve-motoristas-by-escala-active', [Escala::class, 'retrieveMotoristaByEscalaActiveController']);
 Route::get('/retrieve-veiculos-by-escala-active', [Escala::class, 'retrieveVeiculosByEscalaActiveController']);
 
-//POST
 Route::post("/new-escala", [Escala::class, 'newEscalaController'])->name('hc.api.newEscala');
 Route::post("/get-all-escalas-by", [Escala::class, 'getEscalaDataByFilter']);
 Route::post("/get-all-escalas-filter", [Escala::class, 'getAllEscalasByFilter']);
@@ -147,3 +141,11 @@ Route::post("/exclude-escala", [Escala::class, 'excludeEscala']);
 Route::post("/edit-escala", [Escala::class, 'editEscala']);
 
 Route::post("/expire-escala", [Escala::class, "verifyExpireEscalas"]);
+
+// TESTE
+Route::get('/teste', [Teste::class, 'teste'])->name('hc.api.d');
+
+//Rotas Avisos
+
+Route::get('/get_avisos', [Avisos::class, 'getAvisos'])->name('hc.api.getAvisos');
+Route::get('/warnings', [Warnings::class, "makeMsg"])->name("hc.api.Warning");

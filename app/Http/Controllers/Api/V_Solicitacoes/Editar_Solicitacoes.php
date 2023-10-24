@@ -235,23 +235,24 @@ class Editar_Solicitacoes extends Controller
 
     public function getAll_by_Id($id)
     {
-        $sql = new Sql();
+        $exec = Solicitation::where("id", $id)
+            ->select([
+                's.fk_utencilios AS utencil_id',
+                'p.id AS id_paciente',
+                'sol.id AS id_solicitante',
+                'm.id AS id_motorista',
+                'v.id AS id_veiculo',
+                'dp.id AS dist_perc_id'
+            ])
+            ->join('paciente AS p', 's.fk_paciente', '=', 'p.id')
+            ->join('solicitante AS sol', 's.fk_solicitante', '=', 'sol.id')
+            ->join('motorista AS m', 's.fk_motorista', '=', 'm.id')
+            ->join('veiculo AS v', 's.fk_veiculo', '=', 'v.id')
+            ->join('distancia_perc AS dp', 's.fk_dist_perc', '=', 'dp.id')
+            ->where('s.id', $id)
+            ->get();
 
-        $exec = $sql->select("SELECT
-        s.fk_utencilios AS utencil_id,
-        p.id AS id_paciente,
-        sol.id AS id_solicitante,
-        m.id AS id_motorista,
-        v.id AS id_veiculo,
-        dp.id AS dist_perc_id
-        FROM
-        solicitacao s
-        JOIN paciente p ON s.fk_paciente = p.id
-        JOIN solicitante sol ON s.fk_solicitante = sol.id
-        JOIN motorista m ON s.fk_motorista = m.id
-        JOIN veiculo v ON s.fk_veiculo = v.id
-        JOIN distancia_perc dp ON s.fk_dist_perc = dp.id
-        WHERE s.id = $id");
+        dd($exec);
 
         foreach ($exec as $key => $value) {
             $new = $value;

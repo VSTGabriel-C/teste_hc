@@ -13,10 +13,9 @@ class Visualizar_Solicitacoes extends Controller
 {
     public function getAllSolicitations()
     {
-        $vehicle = (new Solicitation)->getAllSolicitations();
+        $solicitation = (new Solicitation)->getAllSolicitations();
 
-        return $vehicle;
-
+        return $solicitation;
     }
 
     public function searchSolicitations(Request $request)
@@ -232,70 +231,60 @@ class Visualizar_Solicitacoes extends Controller
 
     public function queryById($id)
     {
-        $rawQuery = "SELECT
-        s.id AS id_solicitacao,
-        s.n_ficha AS numero_ficha,
-        s.end_loc_ident AS End_Loc_ident,
-        sol.nome AS solicitante,
-        sol.ramal AS sol_ramal,
-        p.nome_paciente,
-        s.atendida_por,
-        s.contato_plantao,
-        s.hc,
-        s.incor,
-        s.ida,
-        s.retorno,
-        s.cancelamento,
-        s.portaria,
-        s.radio,
-        m.nome AS motorista_nome,
-        v.pref AS veiculo_pref,
-        v.`status` AS status_viagem,
-        ut.oxigenio,
-        ut.obeso,
-        ut.isolete,
-        ut.maca,
-        ut.isolamento,
-        ut.d_isolamento AS isolamento_motivo,
-        ut.obito,
-        ut.uti,
-        s.destino,
-        s.`data` AS data_solicitacao,
-        s.hora AS hora_solicitacao,
-        IFNULL(ch.horario, 0) AS ch_horario,
-        IFNULL(ch.km, 0) AS ch_kilometro,
-        IFNULL(vt.horario, 0) AS vt_horario,
-        IFNULL(vt.km, 0) AS vt_kilometro,
-        IFNULL(di.horario, 0) AS horario_saida,
-        IFNULL(di.km, 0) AS sol_km,
-        IFNULL(rm.n_ramal,0) as n_ramalN
-    FROM
-        solicitacao s
-            LEFT JOIN
-        motorista m ON s.fk_motorista = m.id
-            LEFT JOIN
-        paciente p ON s.fk_paciente = p.id
-            LEFT JOIN
-        solicitante sol ON s.fk_solicitante = sol.id
-            LEFT JOIN
-        veiculo v ON s.fk_veiculo = v.id
-            LEFT JOIN
-        utencil ut ON s.fk_utencilios = ut.id
-            LEFT JOIN
-        dir_ch ch ON s.id = ch.fk_solicitation_ch
-            LEFT JOIN
-        dir_volta vt ON s.id = vt.fk_solicitation
-            LEFT JOIN
-        distancia_perc dp ON dp.id = s.fk_dist_perc
-            LEFT JOIN
-        dir_ida di ON di.id = dp.fk_saida
-            LEFT JOIN
-        ramais rm ON s.fk_id_ramais = rm.id
-    WHERE
-        s.id = $id
-    GROUP BY s.id";
+        $result = Solicitation::select([
+            's.id as id_solicitacao',
+            's.n_ficha as numero_ficha',
+            's.end_loc_ident as End_Loc_ident',
+            'sol.nome as solicitante',
+            'sol.ramal as sol_ramal',
+            'p.nome_paciente',
+            's.atendida_por',
+            's.contato_plantao',
+            's.hc',
+            's.incor',
+            's.ida',
+            's.retorno',
+            's.cancelamento',
+            's.portaria',
+            's.radio',
+            'm.nome as motorista_nome',
+            'v.pref as veiculo_pref',
+            'v.status as status_viagem',
+            'ut.oxigenio',
+            'ut.obeso',
+            'ut.isolete',
+            'ut.maca',
+            'ut.isolamento',
+            'ut.d_isolamento as isolamento_motivo',
+            'ut.obito',
+            'ut.uti',
+            's.destino',
+            's.data as data_solicitacao',
+            's.hora as hora_solicitacao',
+            DB::raw('IFNULL(ch.horario, 0) as ch_horario'),
+            DB::raw('IFNULL(ch.km, 0) as ch_kilometro'),
+            DB::raw('IFNULL(vt.horario, 0) as vt_horario'),
+            DB::raw('IFNULL(vt.km, 0) as vt_kilometro'),
+            DB::raw('IFNULL(di.horario, 0) as horario_saida'),
+            DB::raw('IFNULL(di.km, 0) as sol_km'),
+            DB::raw('IFNULL(rm.n_ramal,0) as n_ramalN')
+        ])
+        ->from('solicitacao as s')
+        ->leftJoin('motorista as m', 's.fk_motorista', '=', 'm.id')
+        ->leftJoin('paciente as p', 's.fk_paciente', '=', 'p.id')
+        ->leftJoin('solicitante as sol', 's.fk_solicitante', '=', 'sol.id')
+        ->leftJoin('veiculo as v', 's.fk_veiculo', '=', 'v.id')
+        ->leftJoin('utencil as ut', 's.fk_utencilios', '=', 'ut.id')
+        ->leftJoin('dir_ch as ch', 's.id', '=', 'ch.fk_solicitation_ch')
+        ->leftJoin('dir_volta as vt', 's.id', '=', 'vt.fk_solicitation')
+        ->leftJoin('distancia_perc as dp', 'dp.id', '=', 's.fk_dist_perc')
+        ->leftJoin('dir_ida as di', 'di.id', '=', 'dp.fk_saida')
+        ->leftJoin('ramais as rm', 's.fk_id_ramais', '=', 'rm.id')
+        ->where('s.id', $id)
+        ->groupBy('s.id')
+        ->get();
 
-        return $rawQuery;
+        return $result;
     }
 
 

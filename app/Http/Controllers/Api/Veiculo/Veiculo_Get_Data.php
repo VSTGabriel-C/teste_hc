@@ -17,9 +17,9 @@ class Veiculo_Get_Data extends Controller
 
     }
 
-    public function getVeiculoById(Request $request, $id)
+    public function getVeiculoById($id)
     {
-        $vehicle = (new Vehicle)->getVehicle($request, $id);
+        $vehicle = (new Vehicle)->getVehicle($id);
 
         return $vehicle;
 

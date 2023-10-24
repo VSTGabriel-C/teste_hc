@@ -77,9 +77,9 @@ class Vehicle extends Model
        return json_encode($sm, JSON_UNESCAPED_UNICODE);
     }
 
-    public function getVehicleById(Request $request, $id)
+    public function getVehicleById($id)
     {
-        $response = Vehicle::where("id", $id)->select("id", "pref", "plate", "brand")->get();
+        $response = Vehicle::where("id", $id)->select("id", "pref", "plate", "brand")->first();
         return json_encode($response);
     }
 
@@ -93,5 +93,83 @@ class Vehicle extends Model
         $var = Vehicle::where("h_d", 1)->get();
 
         return json_encode($var);
+    }
+
+    public function deleteVehicle(Request $request)
+    {
+        $id = $request->id;
+        $motivo = $request->motivo;
+
+        $re = Vehicle::where("id", $id)->first();
+
+        if($re->h_d == 2)
+        {
+            $st = Vehicle::where("id", $id)->update(["h_d" => 1, "motive" => $motivo, "status" => 1]);
+
+            if($st)
+            {
+                $response = [
+                    'status' => 1,
+                    'msg' => "Veiculo habilitado com sucesso!"
+                ];
+                return json_encode($response, JSON_UNESCAPED_UNICODE);
+            }
+            else
+            {
+                $response = [
+                    'status' => 2,
+                    'msg' => "Erro ao habilitar veiculo!"
+                ];
+                return json_encode($response, JSON_UNESCAPED_UNICODE);
+            }
+        }
+
+        if($re->h_d == 1)
+        {
+            $st = Vehicle::where("id", $id)->update(["h_d" => 2, "motive" => $motivo, "status" => 3]);
+
+            if($st)
+            {
+                $response = [
+                    'status' => 1,
+                    'msg' => 'Motorista desabilitado com sucesso!'
+                ];
+                return json_encode($response, JSON_UNESCAPED_UNICODE);
+            }else
+            {
+                $response = [
+                    'status' => 2,
+                    'msg' => "Erro ao desabilitar motorista!"
+                ];
+                return json_encode($response, JSON_UNESCAPED_UNICODE);
+            }
+        }
+    }
+
+    public function editVehicle(Request $request)
+    {
+        $id = $request->id;
+        $pref = $request->pref;
+        $type = $request->tipo;
+        $plate = $request->placa;
+        $brand = $request->marca;
+
+        $st = Vehicle::where("id", $id)->update(["type" => $type, "pref" => $pref, "brand" => $brand, "plate" => $plate]);
+
+        if($st)
+        {
+            $response = [
+                'status' => 1,
+                'msg' => "Veiculo editado com sucesso"
+            ];
+            return json_encode($response, JSON_UNESCAPED_UNICODE);
+        }else
+        {
+            $response = [
+                'status' => 0,
+                'msg' => "Erro ao editar Veiculo"
+            ];
+            return json_encode($response, JSON_UNESCAPED_UNICODE);
+        }
     }
 }
