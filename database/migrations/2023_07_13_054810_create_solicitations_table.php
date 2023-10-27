@@ -11,7 +11,7 @@ class CreateSolicitationsTable extends Migration
         Schema::create('solicitations', function (Blueprint $table) {
             $table->id();
             $table->string('date')->nullable();
-            $table->timestamp('hour');
+            $table->string('hour');
             $table->string('destiny');
             $table->string('ordinance');
             $table->string('end_loc_ident');

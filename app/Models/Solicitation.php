@@ -135,6 +135,7 @@ class Solicitation extends Model
 
             $last_patient = $i_paciente->id;
 
+
             //CRIANDO NOVA SOLICITACAO
             $newSolicitation = Solicitation::create([
                 "date" => $request->data_sol,
