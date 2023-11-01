@@ -10,6 +10,7 @@ class CreateVehicleScalesTable extends Migration
     {
         Schema::create('vehicle_scales', function (Blueprint $table) {
             $table->id();
+            $table->string('observation');
             $table->unsignedBigInteger('fk_scale');
             $table->foreign('fk_scale')->references('id')->on('scales')->onDelete('cascade');
             $table->unsignedBigInteger('fk_vehicle');

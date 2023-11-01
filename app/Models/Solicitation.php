@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Traits\HttpResponses;
+use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -119,8 +120,10 @@ class Solicitation extends Model
             return json_encode($msg, JSON_UNESCAPED_UNICODE);
         }
         $ee = DB::transaction(function () use ($request) {
+            
             DB::beginTransaction();
 
+            try {
             $nome_paciente = Crypt::encryptString($request->n_paciente);
 
             //METODOS QUE RECUPERAM ID
@@ -296,6 +299,18 @@ class Solicitation extends Model
             ];
 
             return json_encode($msg, JSON_UNESCAPED_UNICODE);
+        }
+        catch (Exception $ex)
+            {
+
+                dd($ex);
+                die();
+                return [
+                    "code" => 500,
+                    "status" => "error",
+                    "msg" => "Erro ao registrar uma nova scale!"
+                ];
+            }
         });
         return $ee;
     }

@@ -124,18 +124,18 @@ Route::get("/get_QuilometragemModal", [V_informacoes::class, "get_QuilometragemM
 
 
 //ESCALAS
-Route::get('/get-all-escalas', [Escala::class, 'getAllEscalasController']);
-Route::get('/active-deactive', [Escala::class, 'activeDeactive']);
-Route::get('/retrieve-motoristas-by-escala-active', [Escala::class, 'retrieveMotoristaByEscalaActiveController']);
-Route::get('/retrieve-veiculos-by-escala-active', [Escala::class, 'retrieveVeiculosByEscalaActiveController']);
+Route::get('/get-all-escalas', [Escala::class, 'getAllEscalasController']); // Feito
+Route::get('/active-deactive', [Escala::class, 'activeDeactive']); // Feito
+Route::get('/retrieve-motoristas-by-escala-active', [Escala::class, 'retrieveMotoristaByEscalaActiveController']); // Feito
+Route::get('/retrieve-veiculos-by-escala-active', [Escala::class, 'retrieveVeiculosByEscalaActiveController']); // Feito
 
-Route::post("/new-escala", [Escala::class, 'newEscalaController'])->name('hc.api.newEscala');
-Route::post("/get-all-escalas-by", [Escala::class, 'getEscalaDataByFilter']);
-Route::post("/get-all-escalas-filter", [Escala::class, 'getAllEscalasByFilter']);
-Route::post("/exclude-escala", [Escala::class, 'excludeEscala']);
-Route::post("/edit-escala", [Escala::class, 'editEscala']);
+Route::post("/new-escala", [Escala::class, 'newEscalaController'])->name('hc.api.newEscala'); // Feito
+Route::post("/get-all-escalas-by", [Escala::class, 'getEscalaDataByFilter']); // Feito
+Route::post("/get-all-escalas-filter", [Escala::class, 'getAllEscalasByFilter']); // Feito
+Route::post("/exclude-escala", [Escala::class, 'excludeEscala']); // Feito
+Route::post("/edit-escala", [Escala::class, 'editEscala']); // feito
 
-Route::post("/expire-escala", [Escala::class, "verifyExpireEscalas"]);
+Route::post("/expire-escala", [Escala::class, "verifyExpireEscalas"]); // Feito
 
 // TESTE
 Route::get('/teste', [Teste::class, 'teste'])->name('hc.api.d');

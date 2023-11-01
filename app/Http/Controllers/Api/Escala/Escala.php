@@ -3,46 +3,46 @@
 namespace App\Http\Controllers\Api\Escala;
 
 use App\Http\Controllers\Controller;
-use App\Models\Escala as ModelsEscala;
-use App\Models\Escala_motorista as MotoristaEscala;
-use App\Models\Escala_motorista_veiculo as VeiculoEscala;
+use App\Models\DriverScale;
+use App\Models\Scale;
+use App\Models\VehicleScale;
 use Illuminate\Http\Request;
 
 class Escala extends Controller
 {
     public function newEscalaController(Request $request)
     {
-        $escala = new ModelsEscala();
+        $escala = new Scale;
 
         $res = $escala->newEscala($request->all());
 
         return $res;
     }
 
-    public function getAllEscalasController(Request $request)
+    public function getAllEscalasController()
     {
-        $escala = (new ModelsEscala())->getAllEscalas();
+        $escala = (new Scale)->getAllEscalas();
 
         return $escala;
     }
 
     public function getAllEscalasByFilter(Request $request)
     {
-        $escalas = (new ModelsEscala())->getAllEscalasByFilter($request->all());
+        $escalas = (new Scale)->getAllEscalasByFilter($request->all());
 
         return $escalas;
     }
 
     public function getEscalaDataByFilter(Request $request)
     {
-        $escala = (new ModelsEscala())->getAllEscalasDataByFilter($request->all());
+        $escala = (new Scale)->getAllEscalasDataByFilter($request->all());
 
         return $escala;
     }
 
     public function activeDeactive(Request $request)
     {
-        $escala = (new ModelsEscala())->activeDeactiveEscala($request->all());
+        $escala = (new Scale)->activeDeactiveEscala($request->all());
 
         return $escala;
     }
@@ -50,7 +50,7 @@ class Escala extends Controller
     public function excludeEscala(Request $request)
     {
 
-        $escala = (new ModelsEscala())->excludeEscalasById($request->all());
+        $escala = (new Scale)->excludeEscalasById($request->all());
 
         return $escala;
     }
@@ -64,19 +64,19 @@ class Escala extends Controller
 
         if (array_key_exists('dados_basicos', $dados))
         {
-            $escala = (new ModelsEscala())->editEscala($dados);
+            $escala = (new Scale)->editEscala($dados);
             $algumaVariavelFalse = $algumaVariavelFalse || !$escala;
         }
 
         if (array_key_exists('horario_mot', $dados))
         {
-            $MotEscala = (new MotoristaEscala())->editMotoEscala($dados);
+            $MotEscala = (new DriverScale)->EditDriverScale($dados);
             $algumaVariavelFalse = $algumaVariavelFalse || !$MotEscala;
         }
 
         if (array_key_exists('new_veic', $dados) || count($dados['observacao_veic_fk']) != 0)
         {
-            $VeicEscala = (new VeiculoEscala())->editVeicEscala($dados);
+            $VeicEscala = (new VehicleScale)->editVeicEscala($dados);
             $algumaVariavelFalse = $algumaVariavelFalse || !$VeicEscala;
         }
 
@@ -89,23 +89,23 @@ class Escala extends Controller
         }
     }
 
-    public function verifyExpireEscalas(Request $request)
+    public function verifyExpireEscalas()
     {
-        $escala = (new ModelsEscala())->verifyExpireEscala();
+        $escala = (new Scale)->verifyExpireEscala();
 
         return $escala;
     }
 
 
-    public function retrieveMotoristaByEscalaActiveController(Request $request)
+    public function retrieveMotoristaByEscalaActiveController()
     {
-        $escala = (new ModelsEscala())->retrieveMotoristaByEscalaActive();
+        $escala = (new Scale)->retrieveMotoristaByEscalaActive();
 
         return $escala;
     }
-    public function retrieveVeiculosByEscalaActiveController(Request $request)
+    public function retrieveVeiculosByEscalaActiveController()
     {
-        $escala = (new ModelsEscala())->retrieveVeiculosByEscalaActive();
+        $escala = (new Scale)->retrieveVeiculosByEscalaActive();
 
         return $escala;
     }

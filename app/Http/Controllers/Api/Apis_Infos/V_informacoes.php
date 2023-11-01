@@ -367,7 +367,6 @@ class V_informacoes extends Controller
             ->orderBy('s.id', 'asc')
             ->get();
 
-
         if (count($exec) > 0) {
             $newValues = $exec;
 
